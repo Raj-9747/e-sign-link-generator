@@ -4,8 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generate E-Sign Link</title>
+  <title>E Sign Link Generator</title>
   <style>
+    /* ------------------- Base Styles (Kept from Original) ------------------- */
     * {
       margin: 0;
       padding: 0;
@@ -14,20 +15,20 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #f4f7f6;
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 1rem;
+      padding: 3rem 1rem;
     }
 
     .container {
       background: white;
       border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
       padding: 3rem;
-      max-width: 480px;
+      max-width: 600px;
       width: 100%;
       animation: slideIn 0.5s ease-out;
     }
@@ -52,27 +53,144 @@
     .icon {
       width: 60px;
       height: 60px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       margin: 0 auto 1rem;
-      color: white;
-      font-size: 28px;
+      font-size: 32px;
     }
 
     h2 {
-      color: #333;
-      font-size: 1.8rem;
+      color: #3f51b5;
+      font-size: 2.2rem;
+      font-weight: 700;
       margin-bottom: 0.5rem;
     }
 
     .subtitle {
       color: #666;
+      font-size: 1rem;
+    }
+
+    /* ------------------- Progress Stepper Styles ------------------- */
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2rem 0 3rem;
+      position: relative;
+    }
+
+    .stepper-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #e0e0e0;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .stepper-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .stepper-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      background-color: #e0e0e0;
+      color: #777;
+      transition: all 0.3s;
+    }
+
+    .stepper-label {
+      font-size: 0.9rem;
+      color: #777;
+      transition: color 0.3s;
+    }
+
+    .stepper-item.active .stepper-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .stepper-item.active .stepper-label {
+      color: #333;
+      font-weight: 600;
+    }
+
+    /* ------------------- Step 1 - Find Client Styles ------------------- */
+    .instruction-box {
+      padding: 1rem 1.5rem;
+      background-color: #e8f0fe;
+      border-left: 5px solid #3f51b5;
+      border-radius: 5px;
+      color: #3f51b5;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
       font-size: 0.95rem;
     }
 
+    .instruction-box .emoji {
+      font-size: 1.2rem;
+      margin-right: 0.75rem;
+    }
+
+    .find-client-controls {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .find-client-controls input {
+      flex-grow: 1;
+      padding: 0.9rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: #f9f9f9;
+    }
+
+    .find-client-controls input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .find-client-controls button {
+      flex-shrink: 0;
+      width: auto;
+      min-width: 150px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.9rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .find-client-controls button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    /* ------------------- General Button/Form Styles (Adapted) ------------------- */
     form {
       display: flex;
       flex-direction: column;
@@ -89,7 +207,6 @@
       font-weight: 600;
       margin-bottom: 0.5rem;
       font-size: 0.9rem;
-      transition: color 0.3s;
     }
 
     input[type="text"],
@@ -113,20 +230,7 @@
       box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
 
-    input[type="text"]:focus+.input-icon,
-    input[type="email"]:focus+.input-icon {
-      color: #667eea;
-    }
-
-    .input-icon {
-      position: absolute;
-      right: 1rem;
-      top: 2.4rem;
-      color: #999;
-      transition: color 0.3s;
-    }
-
-    button {
+    .full-submit-button {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
@@ -138,21 +242,7 @@
       transition: all 0.3s ease;
       margin-top: 0.5rem;
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
+      width: 100%;
     }
 
     .spinner {
@@ -206,13 +296,79 @@
       background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
     }
 
+    .button-style {
+      display: block;
+      width: 100%;
+      text-decoration: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      text-align: center;
+    }
+
+    .button-style:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .secondary-button {
+      display: block;
+      width: 100%;
+      text-decoration: none;
+      background: white;
+      color: #764ba2;
+      border: 2px solid #667eea;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .secondary-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      background: #f4f4ff;
+    }
+
+    .secondary-action-link {
+        display: block;
+        margin-top: 1rem;
+        text-align: center;
+        color: #667eea;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .secondary-action-link:hover {
+        text-decoration: underline;
+    }
+
     @media (max-width: 600px) {
       .container {
         padding: 2rem 1.5rem;
       }
 
       h2 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
+      }
+
+      .find-client-controls {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .find-client-controls button {
+        min-width: 100%;
       }
     }
   </style>
@@ -220,170 +376,185 @@
 
 <body>
   <div class="container">
+    <!-- Header Section -->
     <div class="header">
-      <div class="icon">✍️</div>
-      <h2>E-Sign Link Generator</h2>
-      <p class="subtitle">Send secure signing links to your clients</p>
+      <div class="icon">🚀</div>
+      <h2 style="color: #3f51b5;">E Sign Link Generator</h2>
+      <p class="subtitle">Complete the E Sign Link Generation process in 3 easy steps</p>
     </div>
 
-    <form id="esignForm">
-      <div class="form-group">
-        <label for="agreement_date">Agreement Date</label>
-        <input type="date" id="agreement_date" name="agreement_date" required />
+    <!-- Progress Stepper -->
+    <div class="stepper">
+      <div class="stepper-line"></div>
+      <div class="stepper-item active" id="progress_step1">
+        <div class="stepper-number">1</div>
+        <div class="stepper-label">Find Client</div>
+      </div>
+      <div class="stepper-item" id="progress_step2">
+        <div class="stepper-number">2</div>
+        <div class="stepper-label">Review Details</div>
+      </div>
+      <div class="stepper-item" id="progress_step3">
+        <div class="stepper-number">3</div>
+        <div class="stepper-label">Send Mail</div>
+      </div>
+    </div>
+
+    <!-- ------------------- Step 1: Find Client (Active) ------------------- -->
+    <div id="findClientStep">
+      <div class="instruction-box">
+        <span class="emoji">📱</span>
+        <span>Enter the client's phone number to retrieve their details from our system.</span>
       </div>
 
       <div class="form-group">
-        <label for="company_name">Company Name</label>
-        <input type="text" id="company_name" name="company_name" placeholder="Acme Corporation" required />
+        <label for="search_phone">Enter Phone Number</label>
+        <div class="find-client-controls">
+          <input type="text" id="search_phone" name="search_phone" placeholder="e.g., 917990700545" />
+          <button type="button" id="findClientBtn">
+            <span class="emoji">🔎</span> Find Client
+          </button>
+        </div>
+        <a href="#" id="proceedManualBtn" class="secondary-action-link">
+          Client not found, or proceed to manual entry
+        </a>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="company_address">Company Address</label>
-        <input type="text" id="company_address" name="company_address"
-          placeholder="456 Business Blvd, City, State 12345" required />
-      </div>
-
-      <div class="form-group">
-        <label for="fname_primary">First Name</label>
-        <input type="text" id="fname_primary" name="fname_primary" placeholder="John" required />
-      </div>
-
-      <div class="form-group">
-        <label for="lname_primary">Last Name</label>
-        <input type="text" id="lname_primary" name="lname_primary" placeholder="Doe" required />
-      </div>
-
-      <div class="form-group">
-        <label for="address_primary">Address</label>
-        <input type="text" id="address_primary" name="address_primary" placeholder="123 Main St, City, State 12345"
-          required />
-      </div>
-
-      <div class="form-group">
-        <label for="client_name">Client Name</label>
-        <input type="text" id="client_name" name="client_name" placeholder="John Doe" required />
-      </div>
-
-      <div class="form-group">
-        <label for="client_email">Email Address</label>
-        <input type="email" id="client_email" name="client_email" placeholder="john@example.com" required />
-      </div>
-
-      <div class="form-group">
-        <label for="client_phone">Phone Number</label>
-        <input type="text" id="client_phone" name="client_phone" placeholder="+1 (555) 123-4567" required />
-      </div>
-
-      <input type="hidden" name="esign_status" value="false" />
-      <input type="hidden" name="payment_status" value="false" />
-
-      <button type="submit" id="submitBtn">
-        <span id="btnText">Generate & Send Link</span>
+    <!-- ------------------- Step 2: Review Details (Hidden Initially) ------------------- -->
+    <div id="reviewDetailsStep" style="display: none;">
+      
+      <!-- Back Button for Step 2 -->
+      <button id="backToSearchBtn" class="secondary-button" style="margin-bottom: 2rem; padding: 0.75rem 1rem;">
+        ← Back to Search
       </button>
-    </form>
 
-    <!-- Add this right after your </form> tag -->
+      <h3 style="margin-bottom: 1.5rem; color: #333; text-align: center;">Review Client & Agreement Details</h3>
+      
+      <form id="esignForm">
+        <div class="form-group">
+          <label for="agreement_date">Agreement Date</label>
+          <input type="date" id="agreement_date" name="agreement_date" required />
+        </div>
+
+        <!-- Company Details -->
+        <div class="form-group">
+          <label for="company_name">Company Name</label>
+          <input type="text" id="company_name" name="company_name" placeholder="Acme Corporation" required />
+        </div>
+
+        <div class="form-group">
+          <label for="company_address">Company Address</label>
+          <input type="text" id="company_address" name="company_address"
+            placeholder="456 Business Blvd, City, State 12345" required />
+        </div>
+
+        <!-- Primary Signer (Your/Internal Details) -->
+        <div class="form-group">
+          <label for="fname_primary">Your First Name</label>
+          <input type="text" id="fname_primary" name="fname_primary" placeholder="John" required />
+        </div>
+
+        <div class="form-group">
+          <label for="lname_primary">Your Last Name</label>
+          <input type="text" id="lname_primary" name="lname_primary" placeholder="Doe" required />
+        </div>
+
+        <div class="form-group">
+          <label for="address_primary">Your Address</label>
+          <input type="text" id="address_primary" name="address_primary" placeholder="123 Main St, City, State 12345"
+            required />
+        </div>
+
+        <!-- Client Contact Details -->
+        <div class="form-group">
+          <label for="client_name">Client Name</label>
+          <input type="text" id="client_name" name="client_name" placeholder="Client Full Name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="client_email">Client Email Address</label>
+          <input type="email" id="client_email" name="client_email" placeholder="client@example.com" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="client_phone">Client Phone Number (Optional)</label>
+          <input type="text" id="client_phone" name="client_phone" placeholder="+1 (555) 123-4567" />
+        </div>
+        
+
+        <input type="hidden" name="esign_status" value="false" />
+        <input type="hidden" name="payment_status" value="false" />
+
+        <button type="submit" id="submitBtn" class="full-submit-button">
+          <span id="btnText">Generate & Send Link</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Review Section (Hidden Initially, After Step 2 Submission) -->
     <div id="reviewSection" style="display: none; text-align: center;">
       <h3 style="margin-bottom: 1rem; color: #333;">Document Prepared</h3>
       <p style="margin-bottom: 2rem; color: #666;">
         Your document has been generated. Please review it before sending.
       </p>
-      <a href="#" id="editDocLink" target="_blank" class="button-style">
+      <a href="#" id="editDocLink" target="_blank" class="button-style" style="margin-bottom: 1rem;">
         Review & Edit Document
       </a>
+
+      <!-- Back Button to edit details (Step 3 -> Step 2) -->
+      <button id="backBtn" class="secondary-button" style="margin-top: 1rem;">
+        Go Back and Edit Details
+      </button>
+
       <button id="sendMailBtn" class="button-style" style="margin-top: 1rem;">
         <span id="sendBtnText">Looks Good, Send Mail</span>
       </button>
     </div>
-
-    <style>
-      .button-style {
-        display: inline-block;
-        width: 100%;
-        text-decoration: none;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 1rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      }
-
-      .button-style:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-      }
-    </style>
   </div>
 
-  <!-- <script>
-    const form = document.getElementById("esignForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const btnText = document.getElementById("btnText");
-
-    function showNotification(message, type) {
-      const notification = document.createElement("div");
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.style.animation = "slideInRight 0.3s ease-out reverse";
-        setTimeout(() => notification.remove(), 300);
-      }, 3000);
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-
-      submitBtn.disabled = true;
-      btnText.innerHTML = '<span class="spinner"></span>Sending...';
-
-      try {
-        const res = await fetch("https://n8n.srv898271.hstgr.cloud/webhook-test/create-and-send-esign-link", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        if (res.ok) {
-          showNotification("✅ E-Sign link sent successfully!", "success");
-          form.reset();
-        } else {
-          showNotification("❌ Failed to send link. Please try again.", "error");
-        }
-      } catch (err) {
-        console.error(err);
-        showNotification("⚠️ Connection error. Please check your network.", "error");
-      } finally {
-        submitBtn.disabled = false;
-        btnText.textContent = "Generate & Send Link";
-      }
-    });
-  </script> -->
   <script>
-    const form = document.getElementById("esignForm");
+    // ----------------------------------------------------
+    // CONSTANTS & ELEMENTS
+    // ----------------------------------------------------
+    const ESIGN_WEBHOOK_URL = "https://n8n.srv898271.hstgr.cloud/webhook/create-and-send-esign-link";
+    const FIND_CLIENT_WEBHOOK_URL = "https://n8n.srv898271.hstgr.cloud/webhook/find-client-details-esign";
+
+    // Stepper Elements
+    const progressStep1 = document.getElementById('progress_step1');
+    const progressStep2 = document.getElementById('progress_step2');
+    const progressStep3 = document.getElementById('progress_step3');
+
+    // Step Containers
+    const findClientStep = document.getElementById('findClientStep'); // Step 1
+    const reviewDetailsStep = document.getElementById('reviewDetailsStep'); // Step 2
+    const reviewSection = document.getElementById("reviewSection"); // Step 3
+
+    // Step 1 Elements
+    const searchPhoneInput = document.getElementById('search_phone');
+    const findClientBtn = document.getElementById('findClientBtn');
+    const proceedManualBtn = document.getElementById('proceedManualBtn');
+
+    // Step 2 Elements
+    const esignForm = document.getElementById("esignForm");
     const submitBtn = document.getElementById("submitBtn");
     const btnText = document.getElementById("btnText");
-    const webhookUrl = "https://n8n.srv898271.hstgr.cloud/webhook/create-and-send-esign-link"; // Your single webhook URL
+    const clientPhoneInput = document.getElementById('client_phone');
+    const backToSearchBtn = document.getElementById('backToSearchBtn');
 
-    // Sections
-    const reviewSection = document.getElementById("reviewSection");
-
-    // Review Section Buttons
+    // Step 3 Elements
     const editDocLink = document.getElementById("editDocLink");
     const sendMailBtn = document.getElementById("sendMailBtn");
     const sendBtnText = document.getElementById("sendBtnText");
+    const backBtn = document.getElementById('backBtn');
 
-    // This will store the data we get back from the first workflow execution
     let finalizationData = {};
+    let currentStep = 1;
+
+
+    // ----------------------------------------------------
+    // UTILITY FUNCTIONS
+    // ----------------------------------------------------
 
     function showNotification(message, type) {
       const notification = document.createElement("div");
@@ -397,18 +568,136 @@
       }, 4000);
     }
 
-    // 1. Event Listener for the initial form submission
-    form.addEventListener("submit", async (e) => {
+    function updateStep(step) {
+        currentStep = step;
+
+        // Reset display of containers
+        findClientStep.style.display = 'none';
+        reviewDetailsStep.style.display = 'none';
+        reviewSection.style.display = 'none';
+        
+        // Reset all progress steps
+        progressStep1.classList.remove('active');
+        progressStep2.classList.remove('active');
+        progressStep3.classList.remove('active');
+        
+        // Activate current step and show container
+        if (step === 1) {
+            progressStep1.classList.add('active');
+            findClientStep.style.display = 'block';
+        } else if (step === 2) {
+            progressStep1.classList.add('active');
+            progressStep2.classList.add('active');
+            reviewDetailsStep.style.display = 'block';
+        } else if (step === 3) {
+            progressStep1.classList.add('active');
+            progressStep2.classList.add('active');
+            progressStep3.classList.add('active');
+            reviewSection.style.display = 'block';
+        }
+    }
+    
+    // ----------------------------------------------------
+    // STEP 1 HANDLERS (Find Client)
+    // ----------------------------------------------------
+
+    // Action when "Find Client" is clicked
+    findClientBtn.addEventListener('click', async () => {
+        const phoneNumber = searchPhoneInput.value.trim();
+
+        if (phoneNumber === "") {
+            showNotification("Please enter a phone number or proceed to manual entry.", "error");
+            return;
+        }
+
+        findClientBtn.disabled = true;
+        findClientBtn.innerHTML = '<span class="spinner"></span>Searching...';
+
+        try {
+            // 1. Fetch Client Details
+            const res = await fetch(FIND_CLIENT_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone_number: phoneNumber }) // Send the phone number to the webhook
+            });
+
+            findClientBtn.disabled = false;
+            findClientBtn.innerHTML = '<span class="emoji">🔎</span> Find Client';
+
+            if (!res.ok) {
+                throw new Error(`Client lookup failed with status: ${res.status}`);
+            }
+
+            const responseData = await res.json();
+            
+            // Check for the new structure: status === "success" and client object exists
+            const clientFound = responseData.status === "success" && responseData.client;
+
+            // Reset form fields before populating/moving
+            esignForm.reset(); 
+            clientPhoneInput.removeAttribute('required'); // Phone is always optional here
+
+            if (clientFound) {
+                const client = responseData.client;
+                
+                // 2. Map and Populate Fields from the new structure
+                document.getElementById('client_name').value = client.client_name || client.customerName || '';
+                document.getElementById('client_email').value = client.client_email || '';
+                document.getElementById('client_phone').value = client.client_phone || phoneNumber;
+                // Note: The 'address_primary' field is not in the provided response, so it remains blank.
+                
+                showNotification(`✅ Client "${client.client_name}" details found and pre-filled!`, "success");
+            } else {
+                // If not found (or status is not success), proceed to manual entry
+                document.getElementById('client_phone').value = phoneNumber; 
+                showNotification("Client not found. Please review and enter details manually.", "error");
+            }
+            
+            // 3. Move to Step 2
+            updateStep(2);
+
+        } catch (err) {
+            console.error("Fetch Error:", err);
+            findClientBtn.disabled = false;
+            findClientBtn.innerHTML = '<span class="emoji">🔎</span> Find Client';
+            
+            // Move to step 2 with the phone number filled in case of API error
+            document.getElementById('client_phone').value = phoneNumber; 
+            updateStep(2);
+            showNotification("⚠️ Connection/Search error. Please review details manually.", "error");
+        }
+    });
+
+    // Action when "Proceed to Manual Entry" is clicked
+    proceedManualBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        esignForm.reset(); 
+        clientPhoneInput.removeAttribute('required');
+        searchPhoneInput.value = ''; 
+        updateStep(2);
+    });
+
+    // ----------------------------------------------------
+    // STEP 2 HANDLERS (Review Details)
+    // ----------------------------------------------------
+    
+    // Back to Search Button (Step 2 -> Step 1)
+    backToSearchBtn.addEventListener('click', () => {
+        updateStep(1); 
+    });
+
+    // 1. Event Listener for the full form submission (Step 2 logic)
+    esignForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const formData = new FormData(form);
+      
+      const formData = new FormData(esignForm);
       const data = Object.fromEntries(formData.entries());
 
       submitBtn.disabled = true;
       btnText.innerHTML = '<span class="spinner"></span>Generating Document...';
 
       try {
-        // This fetch call goes to your workflow for the FIRST time
-        const res = await fetch(webhookUrl, {
+        const res = await fetch(ESIGN_WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
@@ -416,7 +705,6 @@
 
         if (res.ok) {
           const responseData = await res.json();
-          // Store the data we got back from the 'Respond to Webhook' node
           finalizationData = responseData;
 
           showNotification("✅ Document created successfully!", "success");
@@ -424,9 +712,8 @@
           // Update the "Edit Document" link
           editDocLink.href = `https://docs.google.com/document/d/${responseData.documentId}/edit`;
 
-          // Hide the form and show the review section
-          form.style.display = 'none';
-          reviewSection.style.display = 'block';
+          // Move to Step 3 (Review/Finalize)
+          updateStep(3);
 
         } else {
           showNotification("❌ Failed to generate document. Please try again.", "error");
@@ -436,16 +723,27 @@
         showNotification("⚠️ Connection error. Please check your network.", "error");
       }
     });
+    
+    // ----------------------------------------------------
+    // STEP 3 HANDLERS (Review/Finalize)
+    // ----------------------------------------------------
 
-    // 2. Event Listener for the NEW "Send Mail" button
+    // Back Button Logic (Step 3 -> Step 2)
+    backBtn.addEventListener('click', () => {
+        updateStep(2); // Go back to Review Details (Step 2)
+        submitBtn.disabled = false;
+        btnText.textContent = "Generate & Send Link";
+        sendMailBtn.disabled = false;
+        sendBtnText.textContent = "Looks Good, Send Mail";
+    });
+
+    // Send Mail Button Logic
     sendMailBtn.addEventListener("click", async () => {
       sendMailBtn.disabled = true;
       sendBtnText.innerHTML = '<span class="spinner"></span>Sending...';
 
       try {
-        // This fetch call goes to the SAME WORKFLOW URL for the SECOND time
-        // But this time, the body contains the 'documentId'
-        const res = await fetch(webhookUrl, {
+        const res = await fetch(ESIGN_WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(finalizationData) // Send the stored data
@@ -453,7 +751,7 @@
 
         if (res.ok) {
           showNotification("✅ Email sent successfully!", "success");
-          reviewSection.innerHTML = '<h3 style="color: #333;">All Done!</h3><p style="color: #666;">The email has been sent to the client.</p>';
+          reviewSection.innerHTML = '<h3 style="color: #333;">All Done!</h3><p style="color: #666;">The email has been sent to the client. You can close this window now.</p>';
         } else {
           showNotification("❌ Failed to send email. Please try again.", "error");
         }
@@ -461,9 +759,16 @@
         console.error(err);
         showNotification("⚠️ Connection error while sending email.", "error");
       } finally {
-        sendMailBtn.disabled = false;
-        sendBtnText.textContent = "Looks Good, Send Mail";
+        if (reviewSection.querySelector('#sendMailBtn')) {
+            sendMailBtn.disabled = false;
+            sendBtnText.textContent = "Looks Good, Send Mail";
+        }
       }
+    });
+
+    // Initialize to Step 1
+    document.addEventListener('DOMContentLoaded', () => {
+        updateStep(1);
     });
   </script>
 </body>
