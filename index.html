@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E Sign Link Generator</title>
+  <title>Client Onboarding - Find Client</title>
   <style>
     /* ------------------- Base Styles (Kept from Original) ------------------- */
     * {
@@ -196,10 +196,48 @@
       flex-direction: column;
       gap: 1.5rem;
     }
+    
+    /* New: Style for combined date/text inputs for Line Items */
+    .line-item-group {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .line-item-group > div {
+        flex: 1;
+    }
+    /* End New Styles */
+
 
     .form-group {
       position: relative;
     }
+    
+    /* Style for the new select dropdown */
+    select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f9f9f9;
+      -webkit-appearance: none; /* Remove default browser styling */
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20292.36%20292.36%22%3E%3Cpath%20fill%3D%22%23667eea%22%20d%3D%22M287.15%2084.14L146.18%20225.11%205.21%2084.14z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 0.8rem;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #667eea;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
 
     label {
       display: block;
@@ -370,6 +408,11 @@
       .find-client-controls button {
         min-width: 100%;
       }
+      
+      .line-item-group {
+        flex-direction: column;
+        gap: 1.5rem; /* Match other form-group gaps */
+      }
     }
   </style>
 </head>
@@ -379,8 +422,8 @@
     <!-- Header Section -->
     <div class="header">
       <div class="icon">🚀</div>
-      <h2 style="color: #3f51b5;">E Sign Link Generator</h2>
-      <p class="subtitle">Complete the E Sign Link Generation process in 3 easy steps</p>
+      <h2 style="color: #3f51b5;">Client Onboarding</h2>
+      <p class="subtitle">Complete the onboarding process in 3 easy steps</p>
     </div>
 
     <!-- Progress Stepper -->
@@ -396,7 +439,7 @@
       </div>
       <div class="stepper-item" id="progress_step3">
         <div class="stepper-number">3</div>
-        <div class="stepper-label">Send Mail</div>
+        <div class="stepper-label">Select Plan</div>
       </div>
     </div>
 
@@ -432,10 +475,107 @@
       <h3 style="margin-bottom: 1.5rem; color: #333; text-align: center;">Review Client & Agreement Details</h3>
       
       <form id="esignForm">
+        
+        <!-- Client Contact Details -->
+        <div class="form-group">
+          <label for="client_name">Client Name</label>
+          <input type="text" id="client_name" name="client_name" placeholder="Client Full Name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="client_email">Client Email Address</label>
+          <input type="email" id="client_email" name="client_email" placeholder="client@example.com" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="client_phone">Client Phone Number (Optional)</label>
+          <input type="text" id="client_phone" name="client_phone" placeholder="+1 (555) 123-4567" />
+        </div>
+        
+        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 0.5rem 0 2rem;">
+
+        <!-- Agreement Details -->
         <div class="form-group">
           <label for="agreement_date">Agreement Date</label>
           <input type="date" id="agreement_date" name="agreement_date" required />
         </div>
+
+        <!-- NEW: Select Retainer Dropdown -->
+        <div class="form-group">
+            <label for="select_retainer">Select Retainer</label>
+            <select id="select_retainer" name="select_retainer">
+                <option value="">-- Select Retainer (Optional) --</option>
+                <option value="Class 3">Class 3</option>
+                <option value="Citizenship">Citizenship</option>
+                <option value="Sponsorship">Sponsorship</option>
+            </select>
+        </div>
+        
+        <!-- NEW: Line Item 1 -->
+        <div class="form-group">
+            <label>Line Item 1 (Optional)</label>
+            <div class="line-item-group">
+                <div>
+                    <input type="text" name="line_item_amount_1" placeholder="Amount (Without Tax 1)" />
+                </div>
+                <div>
+                    <input type="date" name="line_item_due_on_1" />
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: Line Item 2 -->
+        <div class="form-group">
+            <label>Line Item 2 (Optional)</label>
+            <div class="line-item-group">
+                <div>
+                    <input type="text" name="line_item_amount_2" placeholder="Amount (Without Tax 2)" />
+                </div>
+                <div>
+                    <input type="date" name="line_item_due_on_2" />
+                </div>
+            </div>
+        </div>
+        
+        <!-- NEW: Line Item 3 -->
+        <div class="form-group">
+            <label>Line Item 3 (Optional)</label>
+            <div class="line-item-group">
+                <div>
+                    <input type="text" name="line_item_amount_3" placeholder="Amount (Without Tax 3)" />
+                </div>
+                <div>
+                    <input type="date" name="line_item_due_on_3" />
+                </div>
+            </div>
+        </div>
+        
+        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 0.5rem 0 2rem;">
+        
+        <!-- NEW: Payment Terms Summary Fields -->
+        <div class="form-group">
+          <label for="payment_terms_summary_fees">Summary Fees (Optional)</label>
+          <input type="text" id="payment_terms_summary_fees" name="payment_terms_summary_fees" placeholder="e.g., $1000 Total Fees" />
+        </div>
+        
+        <div class="form-group">
+          <label for="payment_terms_admin_fees">Admin Fees (Optional)</label>
+          <input type="text" id="payment_terms_admin_fees" name="payment_terms_admin_fees" placeholder="e.g., $50 Admin Fee" />
+        </div>
+        
+        <div class="form-group">
+          <label for="payment_terms_taxes">Taxes (Optional)</label>
+          <input type="text" id="payment_terms_taxes" name="payment_terms_taxes" placeholder="e.g., 13% HST" />
+        </div>
+        
+        <div class="form-group">
+          <label for="payment_terms_other_fees">Other Fees (Optional)</label>
+          <input type="text" id="payment_terms_other_fees" name="payment_terms_other_fees" placeholder="e.g., $25 Courier Fee" />
+        </div>
+
+
+        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 0.5rem 0 2rem;">
+
 
         <!-- Company Details -->
         <div class="form-group">
@@ -465,23 +605,6 @@
           <input type="text" id="address_primary" name="address_primary" placeholder="123 Main St, City, State 12345"
             required />
         </div>
-
-        <!-- Client Contact Details -->
-        <div class="form-group">
-          <label for="client_name">Client Name</label>
-          <input type="text" id="client_name" name="client_name" placeholder="Client Full Name" required />
-        </div>
-
-        <div class="form-group">
-          <label for="client_email">Client Email Address</label>
-          <input type="email" id="client_email" name="client_email" placeholder="client@example.com" required />
-        </div>
-        
-        <div class="form-group">
-          <label for="client_phone">Client Phone Number (Optional)</label>
-          <input type="text" id="client_phone" name="client_phone" placeholder="+1 (555) 123-4567" />
-        </div>
-        
 
         <input type="hidden" name="esign_status" value="false" />
         <input type="hidden" name="payment_status" value="false" />
@@ -635,7 +758,7 @@
 
             // Reset form fields before populating/moving
             esignForm.reset(); 
-            clientPhoneInput.removeAttribute('required'); // Phone is always optional here
+            clientPhoneInput.removeAttribute('required'); 
 
             if (clientFound) {
                 const client = responseData.client;
@@ -644,9 +767,8 @@
                 document.getElementById('client_name').value = client.client_name || client.customerName || '';
                 document.getElementById('client_email').value = client.client_email || '';
                 document.getElementById('client_phone').value = client.client_phone || phoneNumber;
-                // Note: The 'address_primary' field is not in the provided response, so it remains blank.
                 
-                showNotification(`✅ Client "${client.client_name}" details found and pre-filled!`, "success");
+                showNotification(`✅ Client "${client.client_name || client.customerName}" details found and pre-filled!`, "success");
             } else {
                 // If not found (or status is not success), proceed to manual entry
                 document.getElementById('client_phone').value = phoneNumber; 
@@ -773,4 +895,4 @@
   </script>
 </body>
 
-</html>
+</html> 
