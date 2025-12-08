@@ -536,11 +536,11 @@
         <div class="form-group line-item-wrapper" id="line-item-1" style="display: none;">
             <label>Line Item 1 (Amount/Due Date)</label>
             <div class="line-item-group">
-                <div>
+                <div> 
                     <input type="text" name="line_item_amount_1" placeholder="Amount (Without Tax 1)" />
                 </div>
                 <div>
-                    <input type="text" name="line_item_due_on_1" placeholder="Due on (e.g., Signing Date, 30 days after)"/>
+                    <input type="text" name="line_item_due_on_1" />
                 </div>
             </div>
         </div>
@@ -553,7 +553,7 @@
                     <input type="text" name="line_item_amount_2" placeholder="Amount (Without Tax 2)" />
                 </div>
                 <div>
-                    <input type="text" name="line_item_due_on_2" placeholder="Due on (e.g., Signing Date, 30 days after)"/>
+                    <input type="text" name="line_item_due_on_2" />
                 </div>
             </div>
         </div>
@@ -566,7 +566,7 @@
                     <input type="text" name="line_item_amount_3" placeholder="Amount (Without Tax 3)" />
                 </div>
                 <div>
-                    <input type="text" name="line_item_due_on_3" placeholder="Due on (e.g., Signing Date, 30 days after)"/>
+                    <input type="text" name="line_item_due_on_3" />
                 </div>
             </div>
         </div>
@@ -579,7 +579,7 @@
                     <input type="text" name="line_item_amount_4" placeholder="Amount (Without Tax 4)" />
                 </div>
                 <div>
-                    <input type="text" name="line_item_due_on_4" placeholder="Due on (e.g., Signing Date, 30 days after)"/>
+                    <input type="text" name="line_item_due_on_4" />
                 </div>
             </div>
         </div>
@@ -592,7 +592,7 @@
                     <input type="text" name="line_item_amount_5" placeholder="Amount (Without Tax 5)" />
                 </div>
                 <div>
-                    <input type="text" name="line_item_due_on_5" placeholder="Due on (e.g., Signing Date, 30 days after)" />
+                    <input type="tezt" name="line_item_due_on_5" />
                 </div>
             </div>
         </div>
@@ -834,12 +834,13 @@
         findClientBtn.innerHTML = '<span class="spinner"></span>Searching...';
 
         try {
-            // 1. Fetch Client Details
-            const res = await fetch(FIND_CLIENT_WEBHOOK_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone_number: phoneNumber }) // Send the phone number to the webhook
-            });
+          // 1. Fetch Client Details
+          const requestBody = { phone_number: phoneNumber };
+          const res = await fetch(FIND_CLIENT_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody) // Send the phone number to the webhook
+          });
 
             findClientBtn.disabled = false;
             findClientBtn.innerHTML = '<span class="emoji">🔎</span> Find Client';
@@ -848,9 +849,21 @@
                 throw new Error(`Client lookup failed with status: ${res.status}`);
             }
 
-            const responseData = await res.json();
-            
-            const clientFound = responseData.status === "success" && responseData.client;
+            const _text = await res.text();
+            let responseData = {};
+            if (_text) {
+              try {
+                responseData = JSON.parse(_text);
+              } catch (parseErr) {
+                console.warn('Invalid JSON from find-client webhook:', parseErr, _text);
+                showNotification('Received non-JSON response from find-client webhook (see console).', 'error');
+                responseData = {};
+              }
+            } else {
+              console.warn('Empty response body from find-client webhook, status:', res.status);
+            }
+
+            const clientFound = responseData && responseData.status === "success" && responseData.client;
 
             // Reset form fields before populating/moving
             esignForm.reset(); 
@@ -920,25 +933,42 @@
       btnText.innerHTML = '<span class="spinner"></span>Generating Document...';
 
       try {
+        console.debug('ESign - request body:', data);
         const res = await fetch(ESIGN_WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
 
+        const _text = await res.text();
+        let responseData = {};
+        if (_text) {
+          try {
+            responseData = JSON.parse(_text);
+          } catch (parseErr) {
+            console.warn('Invalid JSON from esign webhook:', parseErr, _text);
+            showNotification('Received non-JSON response from esign webhook (see console).', 'error');
+            responseData = {};
+          }
+        }
+
         if (res.ok) {
-          const responseData = await res.json();
-          finalizationData = responseData;
+          finalizationData = responseData || {};
 
           showNotification("✅ Document created successfully!", "success");
 
-          // Update the "Edit Document" link
-          editDocLink.href = `https://docs.google.com/document/d/${responseData.documentId}/edit`;
+          // Update the "Edit Document" link if we have a documentId
+          if (responseData && responseData.documentId) {
+            editDocLink.href = `https://docs.google.com/document/d/${responseData.documentId}/edit`;
+          } else {
+            console.warn('No documentId returned from webhook; cannot build edit link.');
+          }
 
           // Move to Step 3 (Review/Finalize)
           updateStep(3);
 
         } else {
+          console.warn('ESign webhook returned non-OK status', res.status, _text);
           showNotification("❌ Failed to generate document. Please try again.", "error");
         }
       } catch (err) {
@@ -1003,4 +1033,3 @@
 </body>
 
 </html>
-
