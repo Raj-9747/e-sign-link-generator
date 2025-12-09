@@ -455,20 +455,32 @@
       </div>
 
       <div class="form-group">
-        <label for="search_value">Search Client</label>
-        <div style="margin-bottom:0.75rem; color:#666; font-size:0.95rem;">
-          Enter a phone number or client ID and we'll detect the type automatically.
-        </div>
+        <label>Search Client by Phone Number</label>
         <div class="find-client-controls">
-          <input type="text" id="search_value" name="search_value" placeholder="e.g., 917990700545" />
-          <button type="button" id="findClientBtn">
+          <input type="text" id="search_phone" name="search_phone" placeholder="e.g., 917990700545" />
+          <button type="button" id="findClientPhoneBtn">
             <span class="emoji">🔎</span> Find Client
           </button>
         </div>
-        <a href="#" id="proceedManualBtn" class="secondary-action-link">
-          Client not found, or proceed to manual entry
-        </a>
       </div>
+
+      <div style="text-align: center; color: #999; margin: 1.5rem 0; font-size: 0.9rem;">
+        OR
+      </div>
+
+      <div class="form-group">
+        <label>Search Client by ID</label>
+        <div class="find-client-controls">
+          <input type="text" id="search_client_id" name="search_client_id" placeholder="e.g., CID12345" />
+          <button type="button" id="findClientIdBtn">
+            <span class="emoji">🔎</span> Find Client
+          </button>
+        </div>
+      </div>
+
+      <a href="#" id="proceedManualBtn" class="secondary-action-link">
+        Client not found, or proceed to manual entry
+      </a>
     </div>
 
     <!-- ------------------- Step 2: Review Details (Hidden Initially) ------------------- -->
@@ -694,8 +706,10 @@
     const reviewSection = document.getElementById("reviewSection"); // Step 3
 
     // Step 1 Elements
-    const searchInput = document.getElementById('search_value');
-    const findClientBtn = document.getElementById('findClientBtn');
+    const searchPhoneInput = document.getElementById('search_phone');
+    const searchClientIdInput = document.getElementById('search_client_id');
+    const findClientPhoneBtn = document.getElementById('findClientPhoneBtn');
+    const findClientIdBtn = document.getElementById('findClientIdBtn');
     const proceedManualBtn = document.getElementById('proceedManualBtn');
 
     // Step 2 Elements
@@ -826,27 +840,16 @@
 
     // Action when "Find Client" is clicked
     // Simple detection: if value contains letters -> client_id, otherwise treat as phone (digits and symbols)
-    function detectSearchType(val) {
-      if (!val) return 'phone';
-      // If contains any alphabetic character, assume client_id
-      if (/[A-Za-z]/.test(val)) return 'client_id';
-      // Otherwise, if it's mostly digits and common phone chars, treat as phone
-      if (/^[0-9()+\-\.\s]+$/.test(val)) return 'phone';
-      // Fallback to client_id
-      return 'client_id';
-    }
+    
+    // Helper function to perform the search with a specific type
+    async function performSearch(searchValue, searchType, buttonEl) {
+        if (searchValue === "") {
+            showNotification("Please enter a value to search.", "error");
+            return;
+        }
 
-    findClientBtn.addEventListener('click', async () => {
-      const searchValue = searchInput.value.trim();
-      const searchType = detectSearchType(searchValue);
-
-      if (searchValue === "") {
-        showNotification("Please enter a Client ID or Phone number, or proceed to manual entry.", "error");
-        return;
-      }
-
-        findClientBtn.disabled = true;
-        findClientBtn.innerHTML = '<span class="spinner"></span>Searching...';
+        buttonEl.disabled = true;
+        buttonEl.innerHTML = '<span class="spinner"></span>Searching...';
 
         try {
           // 1. Fetch Client Details
@@ -854,11 +857,11 @@
           const res = await fetch(FIND_CLIENT_WEBHOOK_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody) // Send the phone number to the webhook
+            body: JSON.stringify(requestBody)
           });
 
-            findClientBtn.disabled = false;
-            findClientBtn.innerHTML = '<span class="emoji">🔎</span> Find Client';
+            buttonEl.disabled = false;
+            buttonEl.innerHTML = '<span class="emoji">🔎</span> Find Client';
 
             if (!res.ok) {
                 throw new Error(`Client lookup failed with status: ${res.status}`);
@@ -918,8 +921,8 @@
 
         } catch (err) {
           console.error("Fetch Error:", err);
-          findClientBtn.disabled = false;
-          findClientBtn.innerHTML = '<span class="emoji">🔎</span> Find Client';
+          buttonEl.disabled = false;
+          buttonEl.innerHTML = '<span class="emoji">🔎</span> Find Client';
 
           // Use the searchValue where appropriate (phone only if phone search)
           document.getElementById('client_phone').value = (searchType === 'phone' ? searchValue : '');
@@ -928,6 +931,18 @@
           updateStep(2);
           showNotification("⚠️ Connection/Search error. Please review details manually.", "error");
         }
+    }
+
+    // Event listener for Find Client by Phone button
+    findClientPhoneBtn.addEventListener('click', async () => {
+        const searchValue = searchPhoneInput.value.trim();
+        await performSearch(searchValue, 'phone', findClientPhoneBtn);
+    });
+
+    // Event listener for Find Client by ID button
+    findClientIdBtn.addEventListener('click', async () => {
+        const searchValue = searchClientIdInput.value.trim();
+        await performSearch(searchValue, 'client_id', findClientIdBtn);
     });
 
     // Action when "Proceed to Manual Entry" is clicked
@@ -935,7 +950,8 @@
       e.preventDefault();
       esignForm.reset();
       clientPhoneInput.removeAttribute('required');
-      searchInput.value = '';
+      searchPhoneInput.value = '';
+      searchClientIdInput.value = '';
       updateStep(2);
     });
 
