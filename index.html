@@ -450,14 +450,17 @@
     <!-- ------------------- Step 1: Find Client (Active) ------------------- -->
     <div id="findClientStep">
       <div class="instruction-box">
-        <span class="emoji">📱</span>
-        <span>Enter the client's phone number to retrieve their details from our system.</span>
+        <span class="emoji">🔎</span>
+        <span>Search by <strong>Client ID</strong> or <strong>Phone Number</strong> to retrieve client details.</span>
       </div>
 
       <div class="form-group">
-        <label for="search_phone">Enter Phone Number</label>
+        <label for="search_value">Search Client</label>
+        <div style="margin-bottom:0.75rem; color:#666; font-size:0.95rem;">
+          Enter a phone number or client ID and we'll detect the type automatically.
+        </div>
         <div class="find-client-controls">
-          <input type="text" id="search_phone" name="search_phone" placeholder="e.g., 917990700545" />
+          <input type="text" id="search_value" name="search_value" placeholder="e.g., 917990700545" />
           <button type="button" id="findClientBtn">
             <span class="emoji">🔎</span> Find Client
           </button>
@@ -691,7 +694,7 @@
     const reviewSection = document.getElementById("reviewSection"); // Step 3
 
     // Step 1 Elements
-    const searchPhoneInput = document.getElementById('search_phone');
+    const searchInput = document.getElementById('search_value');
     const findClientBtn = document.getElementById('findClientBtn');
     const proceedManualBtn = document.getElementById('proceedManualBtn');
 
@@ -822,20 +825,32 @@
     // ----------------------------------------------------
 
     // Action when "Find Client" is clicked
-    findClientBtn.addEventListener('click', async () => {
-        const phoneNumber = searchPhoneInput.value.trim();
+    // Simple detection: if value contains letters -> client_id, otherwise treat as phone (digits and symbols)
+    function detectSearchType(val) {
+      if (!val) return 'phone';
+      // If contains any alphabetic character, assume client_id
+      if (/[A-Za-z]/.test(val)) return 'client_id';
+      // Otherwise, if it's mostly digits and common phone chars, treat as phone
+      if (/^[0-9()+\-\.\s]+$/.test(val)) return 'phone';
+      // Fallback to client_id
+      return 'client_id';
+    }
 
-        if (phoneNumber === "") {
-            showNotification("Please enter a phone number or proceed to manual entry.", "error");
-            return;
-        }
+    findClientBtn.addEventListener('click', async () => {
+      const searchValue = searchInput.value.trim();
+      const searchType = detectSearchType(searchValue);
+
+      if (searchValue === "") {
+        showNotification("Please enter a Client ID or Phone number, or proceed to manual entry.", "error");
+        return;
+      }
 
         findClientBtn.disabled = true;
         findClientBtn.innerHTML = '<span class="spinner"></span>Searching...';
 
         try {
           // 1. Fetch Client Details
-          const requestBody = { phone_number: phoneNumber };
+          const requestBody = (searchType === 'phone') ? { phone_number: searchValue } : { client_id: searchValue };
           const res = await fetch(FIND_CLIENT_WEBHOOK_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -870,47 +885,58 @@
             clientPhoneInput.removeAttribute('required'); 
 
             if (clientFound) {
-                const client = responseData.client;
-                
-                // 2. Map and Populate Fields
-                document.getElementById('fname_primary').value = client.client_name || client.customerName || '';
-                document.getElementById('lname_primary').value = ''; 
+              const client = responseData.client;
 
-                document.getElementById('client_email').value = client.client_email || '';
-                document.getElementById('client_phone').value = client.client_phone || phoneNumber;
-                
-                showNotification(`✅ Client "${client.client_name || client.customerName}" details found and pre-filled!`, "success");
-            } else {
-                // If not found (or status is not success), proceed to manual entry
-                document.getElementById('client_phone').value = phoneNumber; 
+              // 2. Map and Populate Fields
+              const fullName = client.client_name || client.customerName || '';
+              if (fullName) {
+                const parts = fullName.trim().split(/\s+/);
+                const first = parts[0] || '';
+                const last = parts.length > 1 ? parts[parts.length - 1] : '';
+                document.getElementById('fname_primary').value = first;
+                document.getElementById('lname_primary').value = last;
+              } else {
                 document.getElementById('fname_primary').value = '';
                 document.getElementById('lname_primary').value = '';
-                showNotification("Client not found. Please review and enter details manually.", "error");
+              }
+
+              document.getElementById('client_email').value = client.client_email || '';
+              // Prefill phone if provided by the API; otherwise, if the user searched by phone, reuse that value
+              document.getElementById('client_phone').value = client.client_phone || (searchType === 'phone' ? searchValue : '');
+
+              showNotification(`✅ Client "${fullName || client.customerName || ''}" details found and pre-filled!`, "success");
+            } else {
+              // If not found (or status is not success), proceed to manual entry
+              document.getElementById('client_phone').value = (searchType === 'phone' ? searchValue : '');
+              document.getElementById('fname_primary').value = '';
+              document.getElementById('lname_primary').value = '';
+              showNotification("Client not found. Please review and enter details manually.", "error");
             }
             
             // 3. Move to Step 2
             updateStep(2);
 
         } catch (err) {
-            console.error("Fetch Error:", err);
-            findClientBtn.disabled = false;
-            findClientBtn.innerHTML = '<span class="emoji">🔎</span> Find Client';
-            
-            document.getElementById('client_phone').value = phoneNumber; 
-            document.getElementById('fname_primary').value = '';
-            document.getElementById('lname_primary').value = '';
-            updateStep(2);
-            showNotification("⚠️ Connection/Search error. Please review details manually.", "error");
+          console.error("Fetch Error:", err);
+          findClientBtn.disabled = false;
+          findClientBtn.innerHTML = '<span class="emoji">🔎</span> Find Client';
+
+          // Use the searchValue where appropriate (phone only if phone search)
+          document.getElementById('client_phone').value = (searchType === 'phone' ? searchValue : '');
+          document.getElementById('fname_primary').value = '';
+          document.getElementById('lname_primary').value = '';
+          updateStep(2);
+          showNotification("⚠️ Connection/Search error. Please review details manually.", "error");
         }
     });
 
     // Action when "Proceed to Manual Entry" is clicked
     proceedManualBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        esignForm.reset(); 
-        clientPhoneInput.removeAttribute('required');
-        searchPhoneInput.value = ''; 
-        updateStep(2);
+      e.preventDefault();
+      esignForm.reset();
+      clientPhoneInput.removeAttribute('required');
+      searchInput.value = '';
+      updateStep(2);
     });
 
     // ----------------------------------------------------
@@ -1025,11 +1051,11 @@
     document.addEventListener('DOMContentLoaded', () => {
         updateStep(1);
         
-        // Attach change listeners for dynamic fields
-        selectRetainer.addEventListener('change', handleRetainerRequirements);
-        paymentMilestones.addEventListener('change', handleMilestonesVisibility);
+      // Attach change listeners for dynamic fields
+      selectRetainer.addEventListener('change', handleRetainerRequirements);
+      paymentMilestones.addEventListener('change', handleMilestonesVisibility);
+
     });
   </script>
 </body>
-
 </html>
