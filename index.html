@@ -6,12 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Client E-Sign Link Generator</title>
   <style>
-    /* ------------------- Base Styles (Kept from Original) ------------------- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ------------------- Base Styles ------------------- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -28,48 +24,22 @@
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
       padding: 3rem;
-      max-width: 600px;
+      max-width: 850px;
       width: 100%;
       animation: slideIn 0.5s ease-out;
     }
 
     @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
+    .header { text-align: center; margin-bottom: 2rem; }
+    .icon { width: 60px; height: 60px; margin: 0 auto 1rem; font-size: 32px; }
+    h2 { color: #3f51b5; font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .subtitle { color: #666; font-size: 1rem; }
 
-    .icon {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 1rem;
-      font-size: 32px;
-    }
-
-    h2 {
-      color: #3f51b5;
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-      color: #666;
-      font-size: 1rem;
-    }
-
-    /* ------------------- Progress Stepper Styles ------------------- */
+    /* ------------------- Progress Stepper ------------------- */
     .stepper {
       display: flex;
       justify-content: space-between;
@@ -113,23 +83,16 @@
       transition: all 0.3s;
     }
 
-    .stepper-label {
-      font-size: 0.9rem;
-      color: #777;
-      transition: color 0.3s;
-    }
+    .stepper-label { font-size: 0.85rem; color: #777; transition: color 0.3s; }
 
     .stepper-item.active .stepper-number {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
     }
 
-    .stepper-item.active .stepper-label {
-      color: #333;
-      font-weight: 600;
-    }
+    .stepper-item.active .stepper-label { color: #333; font-weight: 600; }
 
-    /* ------------------- Step 1 - Find Client Styles ------------------- */
+    /* ------------------- Form Elements ------------------- */
     .instruction-box {
       padding: 1rem 1.5rem;
       background-color: #e8f0fe;
@@ -143,16 +106,8 @@
       font-size: 0.95rem;
     }
 
-    .instruction-box .emoji {
-      font-size: 1.2rem;
-      margin-right: 0.75rem;
-    }
-
-    .find-client-controls {
-      display: flex;
-      gap: 1rem;
-    }
-
+    .find-client-controls { display: flex; gap: 1rem; }
+    
     .find-client-controls input {
       flex-grow: 1;
       padding: 0.9rem 1rem;
@@ -160,13 +115,6 @@
       border-radius: 10px;
       font-size: 1rem;
       background: #f9f9f9;
-    }
-
-    .find-client-controls input:focus {
-      outline: none;
-      border-color: #667eea;
-      background: white;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
 
     .find-client-controls button {
@@ -182,92 +130,33 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
-
-    .find-client-controls button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-    }
-
-    /* ------------------- General Button/Form Styles (Adapted) ------------------- */
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
     }
     
-    /* Style for combined date/text inputs for Line Items */
-    .line-item-group {
-        display: flex;
-        gap: 1rem;
-    }
+    form { display: flex; flex-direction: column; gap: 1.2rem; }
+    .form-group { position: relative; }
+    .input-row { display: flex; gap: 1rem; }
+    .input-row > div { flex: 1; }
 
-    .line-item-group > div {
-        flex: 1;
-    }
-
-
-    .form-group {
-      position: relative;
-    }
-    
-    /* Style for the select dropdown */
-    select {
+    select, input[type="text"], input[type="email"], input[type="date"], input[type="number"] {
       width: 100%;
       padding: 0.9rem 1rem;
       border: 2px solid #e0e0e0;
       border-radius: 10px;
       font-size: 1rem;
-      transition: all 0.3s ease;
       background: #f9f9f9;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20292.36%20292.36%22%3E%3Cpath%20fill%3D%22%23667eea%22%20d%3D%22M287.15%2084.14L146.18%20225.11%205.21%2084.14z%22%2F%3E%3C%2Fsvg%3E');
-      background-repeat: no-repeat;
-      background-position: right 1rem center;
-      background-size: 0.8rem;
-    }
-
-    select:focus {
-        outline: none;
-        border-color: #667eea;
-        background-color: white;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    }
-
-
-    label {
-      display: block;
-      color: #555;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="date"] {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 1rem;
       transition: all 0.3s ease;
-      background: #f9f9f9;
     }
+    
+    input:read-only { background-color: #eaeaea; color: #666; cursor: not-allowed; }
 
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="date"]:focus {
+    input:focus, select:focus {
       outline: none;
       border-color: #667eea;
       background: white;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
 
-    .full-submit-button {
+    /* Buttons */
+    .full-submit-button, .button-style {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
@@ -276,12 +165,39 @@
       font-weight: 600;
       border-radius: 10px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 0.5rem;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
       width: 100%;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+    
+    .full-submit-button:hover, .button-style:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
     }
 
+    .secondary-button {
+      background: white;
+      color: #764ba2;
+      border: 2px solid #667eea;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    .secondary-button:hover { background: #f4f4ff; }
+    
+    .secondary-action-link {
+        display: block; margin-top: 1rem; text-align: center;
+        color: #667eea; font-size: 0.95rem; text-decoration: none;
+    }
+
+    /* Spinner */
     .spinner {
       display: inline-block;
       width: 16px;
@@ -292,142 +208,82 @@
       animation: spin 0.8s linear infinite;
       margin-right: 8px;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
+    /* Notifications */
     .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 1rem 1.5rem;
-      border-radius: 10px;
-      color: white;
-      font-weight: 600;
+      position: fixed; top: 20px; right: 20px;
+      padding: 1rem 1.5rem; border-radius: 10px;
+      color: white; font-weight: 600; z-index: 1000;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       animation: slideInRight 0.3s ease-out;
-      z-index: 1000;
-      max-width: 350px;
     }
-
     @keyframes slideInRight {
-      from {
-        transform: translateX(400px);
-        opacity: 0;
-      }
-
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
+    .notification.success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .notification.error { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
 
-    .notification.success {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    }
+    /* Conditional Section styles */
+    .conditional-section { display: none; padding: 1rem; background: #fafafa; border-radius: 10px; border: 1px solid #eee; }
 
-    .notification.error {
-      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    /* ------------------- Checkbox Grid Styles ------------------- */
+    .doc-category-title {
+        color: #3f51b5;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 1.5rem 0 1rem;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 0.5rem;
     }
-
-    .button-style {
-      display: block;
-      width: 100%;
-      text-decoration: none;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      padding: 1rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      text-align: center;
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 0.8rem;
     }
-
-    .button-style:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        font-size: 0.9rem;
+        color: #444;
+        background: #f9f9f9;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        transition: all 0.2s;
+        cursor: pointer;
     }
-
-    .secondary-button {
-      display: block;
-      width: 100%;
-      text-decoration: none;
-      background: white;
-      color: #764ba2;
-      border: 2px solid #667eea;
-      padding: 1rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
+    .checkbox-item:hover {
+        background: #f0f4ff;
+        border-color: #667eea;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-
-    .secondary-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      background: #f4f4ff;
+    .checkbox-item input[type="checkbox"] {
+        margin-right: 0.75rem;
+        margin-top: 0.2rem;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        flex-shrink: 0;
     }
-
-    .secondary-action-link {
-        display: block;
-        margin-top: 1rem;
-        text-align: center;
-        color: #667eea;
-        font-size: 0.95rem;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    .secondary-action-link:hover {
-        text-decoration: underline;
-    }
-
-    /* Style for line item wrappers that need to be hidden/shown */
-    .line-item-wrapper {
-        display: none;
-    }
-
+    
     @media (max-width: 600px) {
-      .container {
-        padding: 2rem 1.5rem;
-      }
-
-      h2 {
-        font-size: 1.8rem;
-      }
-
-      .find-client-controls {
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-      .find-client-controls button {
-        min-width: 100%;
-      }
-      
-      .line-item-group {
-        flex-direction: column;
-        gap: 1.5rem; /* Match other form-group gaps */
-      }
+      .container { padding: 2rem 1.5rem; }
+      .find-client-controls { flex-direction: column; }
+      .input-row { flex-direction: column; gap: 1rem; }
+      .checkbox-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <!-- Header Section -->
     <div class="header">
       <div class="icon">🚀</div>
       <h2 style="color: #3f51b5;">Client E-Sign Link Generator</h2>
-      <p class="subtitle">Complete the retainer generation process in 3 easy steps</p>
+      <p class="subtitle">Complete the process to generate agreement</p>
     </div>
 
     <!-- Progress Stepper -->
@@ -439,236 +295,305 @@
       </div>
       <div class="stepper-item" id="progress_step2">
         <div class="stepper-number">2</div>
-        <div class="stepper-label">Review Details</div>
+        <div class="stepper-label">Details</div>
       </div>
       <div class="stepper-item" id="progress_step3">
         <div class="stepper-number">3</div>
-        <div class="stepper-label">Send Retainer</div>
+        <div class="stepper-label">Documents</div>
+      </div>
+      <div class="stepper-item" id="progress_step4">
+        <div class="stepper-number">4</div>
+        <div class="stepper-label">Send</div>
       </div>
     </div>
 
-    <!-- ------------------- Step 1: Find Client (Active) ------------------- -->
-    <div id="findClientStep">
+    <!-- ------------------- Step 1: Find Client ------------------- -->
+    <div id="step1_container">
       <div class="instruction-box">
-        <span class="emoji">🔎</span>
-        <span>Search by <strong>Client ID</strong> or <strong>Phone Number</strong> to retrieve client details.</span>
+        <span style="margin-right: 0.75rem; font-size: 1.2rem;">🔎</span>
+        <span>Search by <strong>Client ID</strong> or <strong>Phone Number</strong>.</span>
       </div>
 
       <div class="form-group">
         <label>Search Client by Phone Number</label>
         <div class="find-client-controls">
-          <input type="text" id="search_phone" name="search_phone" placeholder="e.g., 917990700545" />
-          <button type="button" id="findClientPhoneBtn">
-            <span class="emoji">🔎</span> Find Client
-          </button>
+          <input type="text" id="search_phone" placeholder="e.g., 917990700545" />
+          <button type="button" id="findClientPhoneBtn">Find Client</button>
         </div>
       </div>
 
-      <div style="text-align: center; color: #999; margin: 1.5rem 0; font-size: 0.9rem;">
-        OR
-      </div>
+      <div style="text-align: center; color: #999; margin: 1.5rem 0; font-size: 0.9rem;">OR</div>
 
       <div class="form-group">
         <label>Search Client by ID</label>
         <div class="find-client-controls">
-          <input type="text" id="search_client_id" name="search_client_id" placeholder="e.g., CID12345" />
-          <button type="button" id="findClientIdBtn">
-            <span class="emoji">🔎</span> Find Client
-          </button>
+          <input type="text" id="search_client_id" placeholder="e.g., CID12345" />
+          <button type="button" id="findClientIdBtn">Find Client</button>
         </div>
       </div>
 
-      <a href="#" id="proceedManualBtn" class="secondary-action-link">
-        Client not found, or proceed to manual entry
-      </a>
+      <a href="#" id="proceedManualBtn" class="secondary-action-link">Proceed to manual entry</a>
     </div>
 
-    <!-- ------------------- Step 2: Review Details (Hidden Initially) ------------------- -->
-    <div id="reviewDetailsStep" style="display: none;">
+    <!-- FORM WRAPPER FOR STEP 2 & 3 -->
+    <form id="esignForm">
       
-      <!-- Back Button for Step 2 -->
-      <button id="backToSearchBtn" class="secondary-button" style="margin-bottom: 2rem; padding: 0.75rem 1rem;">
-        ← Back to Search
-      </button>
+      <!-- ------------------- Step 2: Review Details ------------------- -->
+      <div id="step2_container" style="display: none;">
+        <button type="button" id="backToSearchBtn" class="secondary-button" style="width: auto; margin-bottom: 2rem;">
+          ← Back to Search
+        </button>
 
-      <h3 style="margin-bottom: 1.5rem; color: #333; text-align: center;">Review Client & Agreement Details</h3>
-      
-      <form id="esignForm">
-        
-        <!-- Client Name Details -->
-        <div class="form-group">
-          <label for="fname_primary">Client First Name</label>
-          <input type="text" id="fname_primary" name="fname_primary" placeholder="Client First Name" required />
-        </div>
+        <h3 style="margin-bottom: 1.5rem; color: #333; text-align: center;">Retainer Agreement Details</h3>
 
+        <!-- Retainer Selection -->
         <div class="form-group">
-          <label for="lname_primary">Client Last Name</label>
-          <input type="text" id="lname_primary" name="lname_primary" placeholder="Client Last Name" required />
-        </div>
-
-        <!-- Client Contact Details -->
-        <div class="form-group">
-          <label for="client_email">Client Email Address</label>
-          <input type="email" id="client_email" name="client_email" placeholder="client@example.com" required />
+            <label for="select_retainer" style="color: #3f51b5;">Select Retainer Type</label>
+            <!-- Values kept as numbers for easy logic handling, Text will be sent to backend -->
+            <select id="select_retainer" name="retainer_type" required>
+                <option value="">-- Select Option --</option>
+                <option value="1">1 : Initial Consultation- TDOT</option>
+                <option value="2">2 : Retainer Agreement -TDOT- LMIA (Employer's Legal Rep)</option>
+                <option value="3">3 : Retainer Agreement - TDOT- PA + Inviter</option>
+                <option value="4">4 : Retainer Agreement - TDOT- PA</option>
+            </select>
         </div>
         
-        <div class="form-group">
-          <label for="client_phone">Client Phone Number (Optional)</label>
-          <input type="text" id="client_phone" name="client_phone" placeholder="+1 (555) 123-4567" />
-        </div>
-        
-        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 0.5rem 0 2rem;">
+        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 0.5rem 0 1.5rem;">
 
-        <!-- Agreement Details -->
+        <!-- Common Fields -->
         <div class="form-group">
           <label for="agreement_date">Agreement Date</label>
           <input type="date" id="agreement_date" name="agreement_date" required />
         </div>
 
-        <!-- Select Retainer Dropdown -->
-        <div class="form-group">
-            <label for="select_retainer">Select Retainer</label>
-            <select id="select_retainer" name="select_retainer">
-                <option value="">-- Select Retainer (Optional) --</option>
-                <option value="Class 3">Class 3</option>
-                <option value="Citizenship">Citizenship</option>
-                <option value="Sponsorship">Sponsorship</option>
-            </select>
+        <div class="input-row">
+            <div class="form-group">
+              <label id="lbl_fname">Client First Name</label>
+              <input type="text" id="fname_primary" name="fname_primary" placeholder="First Name" required />
+            </div>
+            <div class="form-group">
+              <label id="lbl_lname">Client Last Name</label>
+              <input type="text" id="lname_primary" name="lname_primary" placeholder="Last Name" required />
+            </div>
         </div>
 
-        <!-- NEW: Payment Milestones Dropdown -->
-        <div class="form-group" id="milestones-group" style="display: none;">
-            <label for="payment_milestones">Payment Milestones</label>
-            <select id="payment_milestones" name="payment_milestones">
-                <option value="">-- Select Milestones --</option>
-                <option value="3">3 Milestone</option>
-                <option value="4">4 Milestone</option>
-                <option value="5">5 Milestone</option>
-            </select>
+        <div class="input-row">
+            <div class="form-group">
+                <label id="lbl_email">Client Email</label>
+                <input type="email" id="client_email" name="client_email" placeholder="email@example.com" required />
+            </div>
+            <div class="form-group">
+                <label id="lbl_phone">Client Phone</label>
+                <input type="text" id="client_phone" name="client_phone" placeholder="+1 (555) 123-4567" required />
+            </div>
         </div>
         
-        <!-- Line Item 1 (Always Visible if milestones is selected) -->
-        <div class="form-group line-item-wrapper" id="line-item-1" style="display: none;">
-            <label>Line Item 1 (Amount/Due Date)</label>
-            <div class="line-item-group">
-                <div> 
-                    <input type="text" name="line_item_amount_1" placeholder="Amount (Without Tax 1)" />
+        <!-- Dynamic Sections -->
+        <div class="form-group conditional-section" id="sec_app_type">
+             <label>Type of Application</label>
+             <input type="text" id="application_type" name="application_type" readonly />
+        </div>
+
+        <div class="form-group conditional-section" id="sec_client_address">
+             <label id="lbl_client_address">Address</label>
+             <input type="text" id="client_address" name="client_address" placeholder="Full Address" />
+        </div>
+
+        <div class="conditional-section" id="sec_consultation">
+            <div class="input-row">
+                <div class="form-group">
+                    <label>Amount Paid ($)</label>
+                    <input type="number" step="0.01" name="consultation_amount" placeholder="0.00" />
                 </div>
-                <div>
-                    <input type="text" name="line_item_due_on_1" />
+                <div class="form-group">
+                    <label>Duration of Consultation</label>
+                    <input type="text" name="consultation_duration" placeholder="e.g. 1 Hour" />
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 1rem;">
+                <label>Consultation Date</label>
+                <input type="date" name="consultation_date" />
+            </div>
+        </div>
+
+        <div class="conditional-section" id="sec_company">
+            <div class="form-group">
+                <label>Full Name of Employer Company</label>
+                <input type="text" name="company_name" placeholder="Company Name" />
+            </div>
+            <div class="form-group">
+                <label>Company Address</label>
+                <input type="text" name="company_address" placeholder="Company Full Address" />
+            </div>
+            <div class="form-group">
+                <label>Company Phone Number</label>
+                <input type="text" name="company_phone" placeholder="Company Phone" />
+            </div>
+        </div>
+
+        <div class="conditional-section" id="sec_inviter">
+            <h4 style="margin-bottom:1rem; color:#3f51b5;">Inviter / Sponsor Details</h4>
+            <div class="form-group">
+                <label>Name of Inviter/Sponsor</label>
+                <input type="text" name="inviter_name" placeholder="Full Name" />
+            </div>
+            <div class="form-group">
+                <label>Address of Inviter/Sponsor</label>
+                <input type="text" name="inviter_address" placeholder="Full Address" />
+            </div>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>Inviter Phone</label>
+                    <input type="text" name="inviter_phone" />
+                </div>
+                <div class="form-group">
+                    <label>Inviter Email</label>
+                    <input type="email" name="inviter_email" />
                 </div>
             </div>
         </div>
 
-        <!-- Line Item 2 -->
-        <div class="form-group line-item-wrapper" id="line-item-2">
-            <label>Line Item 2 (Amount/Due Date)</label>
-            <div class="line-item-group">
-                <div>
-                    <input type="text" name="line_item_amount_2" placeholder="Amount (Without Tax 2)" />
+        <div class="conditional-section" id="sec_financials">
+            <h4 style="margin-bottom:1rem; color:#3f51b5;">Payment Details</h4>
+            <div class="form-group">
+                <label>Summary Fees (CAD)</label>
+                <input type="number" step="0.01" name="payment_terms_summary_fees" placeholder="0.00" />
+            </div>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>Professional Taxes (CAD)</label>
+                    <input type="number" step="0.01" name="professional_taxes" placeholder="0.00" />
                 </div>
-                <div>
-                    <input type="text" name="line_item_due_on_2" />
+                <div class="form-group">
+                    <label>Total Amount ($)</label>
+                    <input type="number" step="0.01" name="total_amount" placeholder="0.00" />
                 </div>
             </div>
         </div>
         
-        <!-- Line Item 3 -->
-        <div class="form-group line-item-wrapper" id="line-item-3">
-            <label>Line Item 3 (Amount/Due Date)</label>
-            <div class="line-item-group">
-                <div>
-                    <input type="text" name="line_item_amount_3" placeholder="Amount (Without Tax 3)" />
-                </div>
-                <div>
-                    <input type="text" name="line_item_due_on_3" />
-                </div>
-            </div>
+        <!-- Navigation Button for Step 2 -->
+        <div style="margin-top: 2rem;">
+            <button type="button" id="goToStep3Btn" class="full-submit-button">Next →</button>
+        </div>
+      </div>
+
+      <!-- ------------------- Step 3: Select Documents ------------------- -->
+      <div id="step3_container" style="display: none;">
+        <button type="button" id="backToStep2Btn" class="secondary-button" style="width: auto; margin-bottom: 2rem;">
+            ← Back to Details
+        </button>
+
+        <h3 style="text-align: center; margin-bottom: 1rem;">Select Documents</h3>
+        <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+            Check the documents required for this application.<br>
+            <span style="font-size: 0.9rem; color:#888;">Selected items will be sent to the backend.</span>
+        </p>
+
+        <!-- Permanent Application Section -->
+        <div class="doc-category-title">Permanent Application</div>
+        <div class="checkbox-grid">
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Non Express Entry Application- Annex A"> Non Express Entry Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Federal PR Application- Annex A"> Federal PR Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Express Entry Application- Annex A"> Express Entry Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Canadian Experience Class Application- Annex A"> Canadian Experience Class Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Spousal- Common Law Sponsorship Application"> Spousal- Common Law Sponsorship Application
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Provincial Nominee Program Application- Annex A"> Provincial Nominee Program Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Parents-Grandparents Sponsorship Application"> Parents-Grandparents Sponsorship Application
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="LMIA- Annex A"> LMIA- Annex A
+            </label>
         </div>
 
-        <!-- NEW: Line Item 4 (Initially hidden) -->
-        <div class="form-group line-item-wrapper" id="line-item-4">
-            <label>Line Item 4 (Amount/Due Date)</label>
-            <div class="line-item-group">
-                <div>
-                    <input type="text" name="line_item_amount_4" placeholder="Amount (Without Tax 4)" />
-                </div>
-                <div>
-                    <input type="text" name="line_item_due_on_4" />
-                </div>
-            </div>
-        </div>
-
-        <!-- NEW: Line Item 5 (Initially hidden) -->
-        <div class="form-group line-item-wrapper" id="line-item-5">
-            <label>Line Item 5 (Amount/Due Date)</label>
-            <div class="line-item-group">
-                <div>
-                    <input type="text" name="line_item_amount_5" placeholder="Amount (Without Tax 5)" />
-                </div>
-                <div>
-                    <input type="tezt" name="line_item_due_on_5" />
-                </div>
-            </div>
-        </div>
-        
-        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 0.5rem 0 2rem;">
-        
-        <!-- Payment Terms Summary Fields -->
-        <div class="form-group">
-          <label for="payment_terms_summary_fees">Summary Fees (Optional)</label>
-          <input type="text" id="payment_terms_summary_fees" name="payment_terms_summary_fees" placeholder="e.g., $1000 Total Fees" />
-        </div>
-        
-        <div class="form-group">
-          <label for="payment_terms_admin_fees">Admin Fees (Optional)</label>
-          <input type="text" id="payment_terms_admin_fees" name="payment_terms_admin_fees" placeholder="e.g., $50 Admin Fee" />
-        </div>
-        
-        <div class="form-group">
-          <label for="payment_terms_taxes">Taxes (Optional)</label>
-          <input type="text" id="payment_terms_taxes" name="payment_terms_taxes" placeholder="e.g., 13% HST" />
-        </div>
-        
-        <div class="form-group">
-          <label for="payment_terms_other_fees">Other Fees (Optional)</label>
-          <input type="text" id="payment_terms_other_fees" name="payment_terms_other_fees" placeholder="e.g., $25 Courier Fee" />
-        </div>
-
-
-        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 0.5rem 0 2rem;">
-
-
-        <!-- Company Details -->
-        <div class="form-group">
-          <label for="company_name">Company Name</label>
-          <input type="text" id="company_name" name="company_name" placeholder="Acme Corporation" required />
-        </div>
-
-        <div class="form-group">
-          <label for="company_address">Company Address</label>
-          <input type="text" id="company_address" name="company_address"
-            placeholder="456 Business Blvd, City, State 12345" required />
-        </div>
-
-        <!-- Primary Signer (Your/Internal Details) -->
-        <div class="form-group">
-          <label for="address_primary">Your Address</label>
-          <input type="text" id="address_primary" name="address_primary" placeholder="123 Main St, City, State 12345"
-            required />
+        <!-- Temporary Application Section -->
+        <div class="doc-category-title">Temporary Application</div>
+        <div class="checkbox-grid">
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Visitor Record (change of status) Application- Annex A"> Visitor Record (change of status) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Concurrent Work Permit Application- Annex A"> Concurrent Work Permit Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Bridging Open Work Permit (BOWP) Application"> Bridging Open Work Permit (BOWP) Application
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Permanent Resident Card (PR) Application- Annex A"> Permanent Resident Card (PR) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Visitor Visa (Outside canada) Application- Annex A"> Visitor Visa (Outside canada) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Parents-Grandparents Supervisa Application- Annex A"> Parents-Grandparents Supervisa Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Canadian Citizenship Application- Annex A"> Canadian Citizenship Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Spousal Open Work Permit Extension Application"> Spousal Open Work Permit Extension Application
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Spousal Open Work Permit Application (SOWP)"> Spousal Open Work Permit Application (SOWP)
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="SCLPC Work Permit Application- Annex A"> SCLPC Work Permit Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="LMIA based Work Permit Extension Application- Annex A"> LMIA based Work Permit Extension Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="LMIA based Work Permit Application- Annex A"> LMIA based Work Permit Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Restoration of Status Application- Annex A"> Restoration of Status Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Post Graduate Work Permit Extension Application"> Post Graduate Work Permit Extension Application
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Post Graduate Work Permit Application- Annex A"> Post Graduate Work Permit Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Permanent Resident Travel Document (PRTD) Application"> Permanent Resident Travel Document (PRTD) Application
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Study Permit Extension Application- Annex A"> Study Permit Extension Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Temporary Resident Visa (TRV) Application- Annex A"> Temporary Resident Visa (TRV) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Study Permit Application- Annex A"> Study Permit Application- Annex A
+            </label>
         </div>
 
         <input type="hidden" name="esign_status" value="false" />
         <input type="hidden" name="payment_status" value="false" />
 
-        <button type="submit" id="submitBtn" class="full-submit-button">
-          <span id="btnText">Generate & Send Link</span>
-        </button>
-      </form>
-    </div>
+        <div style="margin-top: 2rem;">
+            <button type="submit" id="submitBtn" class="full-submit-button">
+              <span id="btnText">Generate & Send Link</span>
+            </button>
+        </div>
+      </div>
+    </form>
 
-    <!-- Review Section (Hidden Initially, After Step 2 Submission) -->
-    <div id="reviewSection" style="display: none; text-align: center;">
+    <!-- ------------------- Step 4: Final Review ------------------- -->
+    <div id="step4_container" style="display: none; text-align: center;">
       <h3 style="margin-bottom: 1rem; color: #333;">Document Prepared</h3>
       <p style="margin-bottom: 2rem; color: #666;">
         Your document has been generated. Please review it before sending.
@@ -676,10 +601,9 @@
       <a href="#" id="editDocLink" target="_blank" class="button-style" style="margin-bottom: 1rem;">
         Review & Edit Document
       </a>
-
-      <!-- Back Button to edit details (Step 3 -> Step 2) -->
+      
       <button id="backBtn" class="secondary-button" style="margin-top: 1rem;">
-        Go Back and Edit Details
+        Go Back to Edit
       </button>
 
       <button id="sendMailBtn" class="button-style" style="margin-top: 1rem;">
@@ -690,388 +614,269 @@
 
   <script>
     // ----------------------------------------------------
-    // CONSTANTS & ELEMENTS
+    // CONFIGURATION
     // ----------------------------------------------------
     const ESIGN_WEBHOOK_URL = "https://n8n.srv898271.hstgr.cloud/webhook/create-and-send-esign-link";
     const FIND_CLIENT_WEBHOOK_URL = "https://n8n.srv898271.hstgr.cloud/webhook/find-client-details-esign";
 
-    // Stepper Elements
-    const progressStep1 = document.getElementById('progress_step1');
-    const progressStep2 = document.getElementById('progress_step2');
-    const progressStep3 = document.getElementById('progress_step3');
-
-    // Step Containers
-    const findClientStep = document.getElementById('findClientStep'); // Step 1
-    const reviewDetailsStep = document.getElementById('reviewDetailsStep'); // Step 2
-    const reviewSection = document.getElementById("reviewSection"); // Step 3
-
-    // Step 1 Elements
-    const searchPhoneInput = document.getElementById('search_phone');
-    const searchClientIdInput = document.getElementById('search_client_id');
-    const findClientPhoneBtn = document.getElementById('findClientPhoneBtn');
-    const findClientIdBtn = document.getElementById('findClientIdBtn');
-    const proceedManualBtn = document.getElementById('proceedManualBtn');
-
-    // Step 2 Elements
-    const esignForm = document.getElementById("esignForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const btnText = document.getElementById("btnText");
-    const clientPhoneInput = document.getElementById('client_phone');
-    const backToSearchBtn = document.getElementById('backToSearchBtn');
+    const containers = {
+      1: document.getElementById('step1_container'),
+      2: document.getElementById('step2_container'),
+      3: document.getElementById('step3_container'),
+      4: document.getElementById('step4_container')
+    };
     
-    // NEW DROPDOWN ELEMENTS
-    const selectRetainer = document.getElementById('select_retainer');
-    const paymentMilestonesGroup = document.getElementById('milestones-group');
-    const paymentMilestones = document.getElementById('payment_milestones');
-    const lineItemWrappers = [1, 2, 3, 4, 5].map(i => document.getElementById(`line-item-${i}`));
+    const progressItems = {
+      1: document.getElementById('progress_step1'),
+      2: document.getElementById('progress_step2'),
+      3: document.getElementById('progress_step3'),
+      4: document.getElementById('progress_step4')
+    };
 
-    // Step 3 Elements
-    const editDocLink = document.getElementById("editDocLink");
-    const sendMailBtn = document.getElementById("sendMailBtn");
-    const sendBtnText = document.getElementById("sendBtnText");
-    const backBtn = document.getElementById('backBtn');
-
+    const esignForm = document.getElementById("esignForm");
     let finalizationData = {};
-    let currentStep = 1;
-
 
     // ----------------------------------------------------
-    // UTILITY FUNCTIONS
+    // HELPER FUNCTIONS
     // ----------------------------------------------------
-
     function showNotification(message, type) {
       const notification = document.createElement("div");
       notification.className = `notification ${type}`;
       notification.textContent = message;
       document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.style.animation = "slideInRight 0.3s ease-out reverse";
-        setTimeout(() => notification.remove(), 300);
-      }, 4000);
+      setTimeout(() => notification.remove(), 4000);
     }
 
-    function updateStep(step) {
-        currentStep = step;
+    function updateStep(stepNumber) {
+      Object.values(containers).forEach(el => el.style.display = 'none');
+      containers[stepNumber].style.display = 'block';
 
-        // Reset display of containers
-        findClientStep.style.display = 'none';
-        reviewDetailsStep.style.display = 'none';
-        reviewSection.style.display = 'none';
-        
-        // Reset all progress steps
-        progressStep1.classList.remove('active');
-        progressStep2.classList.remove('active');
-        progressStep3.classList.remove('active');
-        
-        // Activate current step and show container
-        if (step === 1) {
-            progressStep1.classList.add('active');
-            findClientStep.style.display = 'block';
-        } else if (step === 2) {
-            progressStep1.classList.add('active');
-            progressStep2.classList.add('active');
-            reviewDetailsStep.style.display = 'block';
-            
-            // Re-run the requirement and visibility check upon returning to step 2
-            handleRetainerRequirements();
-            handleMilestonesVisibility();
-            
-        } else if (step === 3) {
-            progressStep1.classList.add('active');
-            progressStep2.classList.add('active');
-            progressStep3.classList.add('active');
-            reviewSection.style.display = 'block';
-        }
+      Object.values(progressItems).forEach(el => el.classList.remove('active'));
+      for (let i = 1; i <= stepNumber; i++) {
+        progressItems[i].classList.add('active');
+      }
+      window.scrollTo(0, 0);
     }
+
+    function hideAllSections() {
+        ['sec_app_type', 'sec_client_address', 'sec_consultation', 'sec_company', 'sec_inviter', 'sec_financials']
+        .forEach(id => document.getElementById(id).style.display = 'none');
+    }
+
+    // ----------------------------------------------------
+    // DYNAMIC FORM LOGIC
+    // ----------------------------------------------------
+    const selectRetainer = document.getElementById('select_retainer');
     
-    // ----------------------------------------------------
-    // NEW: PAYMENT MILESTONE & RETAINER LOGIC
-    // ----------------------------------------------------
+    const lblFname = document.getElementById('lbl_fname');
+    const lblLname = document.getElementById('lbl_lname');
+    const lblPhone = document.getElementById('lbl_phone');
+    const lblEmail = document.getElementById('lbl_email');
+    const lblClientAddress = document.getElementById('lbl_client_address');
+    const inputAppType = document.getElementById('application_type');
 
-    function handleMilestonesVisibility() {
-        // Get the selected number of milestones (3, 4, or 5)
-        const milestoneCount = parseInt(paymentMilestones.value, 10) || 0;
+    selectRetainer.addEventListener('change', () => {
+        const val = selectRetainer.value;
+        const text = selectRetainer.options[selectRetainer.selectedIndex].text;
         
-        // Loop through all 5 line item wrappers
-        lineItemWrappers.forEach((wrapper, index) => {
-            const lineItemNumber = index + 1; // 1, 2, 3, 4, 5
-            
-            if (lineItemNumber <= milestoneCount) {
-                // Show the line item if its index is less than or equal to the selected count
-                wrapper.style.display = 'block';
-                // Line item inputs remain optional as per the request, 
-                // but an actual payment flow might require them.
-            } else {
-                // Hide the line item
-                wrapper.style.display = 'none';
-                
-                // OPTIONAL: Clear the hidden fields to prevent sending irrelevant data
-                const amountInput = wrapper.querySelector(`input[name="line_item_amount_${lineItemNumber}"]`);
-                const dateInput = wrapper.querySelector(`input[name="line_item_due_on_${lineItemNumber}"]`);
-                if (amountInput) amountInput.value = '';
-                if (dateInput) dateInput.value = '';
-            }
-        });
-    }
+        hideAllSections();
+        
+        // Default Labels
+        lblFname.textContent = "Client First Name";
+        lblLname.textContent = "Client Last Name";
+        lblEmail.textContent = "Client Email";
+        lblPhone.textContent = "Client Phone";
+        lblClientAddress.textContent = "Address";
 
-    function handleRetainerRequirements() {
-        const isRetainerSelected = selectRetainer.value !== "";
-        
-        if (isRetainerSelected) {
-            // RETAINER IS SELECTED: Show milestones and make it required
-            paymentMilestonesGroup.style.display = 'block';
-            paymentMilestones.setAttribute('required', 'required');
-        } else {
-            // RETAINER IS NOT SELECTED: Hide milestones, make it optional, and clear/reset
-            paymentMilestonesGroup.style.display = 'none';
-            paymentMilestones.removeAttribute('required');
-            paymentMilestones.value = ""; // Clear the selection
+        if (val === '1') {
+            document.getElementById('sec_client_address').style.display = 'block';
+            document.getElementById('sec_consultation').style.display = 'block';
+            lblFname.textContent = "Name (First)"; lblLname.textContent = "Name (Last)";
+            lblPhone.textContent = "Tel"; lblEmail.textContent = "E-mail";
+        } else if (val === '2') {
+            document.getElementById('sec_company').style.display = 'block';
+            document.getElementById('sec_financials').style.display = 'block';
+            lblFname.textContent = "Legal Rep First Name"; lblLname.textContent = "Legal Rep Last Name";
+            lblPhone.textContent = "Legal Rep Phone"; lblEmail.textContent = "Legal Rep Email";
+        } else if (val === '3') {
+            document.getElementById('sec_app_type').style.display = 'block';
+            document.getElementById('sec_client_address').style.display = 'block';
+            document.getElementById('sec_inviter').style.display = 'block';
+            document.getElementById('sec_financials').style.display = 'block';
+            lblFname.textContent = "Principal Applicant First Name"; lblLname.textContent = "Principal Applicant Last Name";
+            inputAppType.value = text;
+            lblClientAddress.textContent = "Address (PA)";
+        } else if (val === '4') {
+            document.getElementById('sec_app_type').style.display = 'block';
+            document.getElementById('sec_client_address').style.display = 'block';
+            document.getElementById('sec_financials').style.display = 'block';
+            lblFname.textContent = "Principal Applicant First Name"; lblLname.textContent = "Principal Applicant Last Name";
+            inputAppType.value = text;
+            lblClientAddress.textContent = "Client Address";
         }
-        
-        // Always run visibility logic, which handles hiding/clearing when milestones.value is cleared
-        handleMilestonesVisibility();
-    }
-
+    });
 
     // ----------------------------------------------------
-    // STEP 1 HANDLERS (Find Client)
+    // STEP NAVIGATION LOGIC
     // ----------------------------------------------------
-
-    // Action when "Find Client" is clicked
-    // Simple detection: if value contains letters -> client_id, otherwise treat as phone (digits and symbols)
-    
-    // Helper function to perform the search with a specific type
-    async function performSearch(searchValue, searchType, buttonEl) {
-        if (searchValue === "") {
-            showNotification("Please enter a value to search.", "error");
-            return;
+    document.getElementById('goToStep3Btn').onclick = () => {
+        if(esignForm.reportValidity()) {
+            updateStep(3);
         }
+    };
+    document.getElementById('backToSearchBtn').onclick = () => updateStep(1);
+    document.getElementById('backToStep2Btn').onclick = () => updateStep(2);
+    document.getElementById('backBtn').onclick = () => updateStep(3);
 
-        buttonEl.disabled = true;
-        buttonEl.innerHTML = '<span class="spinner"></span>Searching...';
+    // ----------------------------------------------------
+    // STEP 1: FIND CLIENT
+    // ----------------------------------------------------
+    async function performSearch(val, type, btn) {
+        if(!val) return showNotification("Please enter a value", "error");
+        
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Searching...';
 
         try {
-          // 1. Fetch Client Details
-          const requestBody = (searchType === 'phone') ? { phone_number: searchValue } : { client_id: searchValue };
-          const res = await fetch(FIND_CLIENT_WEBHOOK_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody)
-          });
+            const res = await fetch(FIND_CLIENT_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(type === 'phone' ? { phone_number: val } : { client_id: val })
+            });
 
-            buttonEl.disabled = false;
-            buttonEl.innerHTML = '<span class="emoji">🔎</span> Find Client';
-
-            if (!res.ok) {
-                throw new Error(`Client lookup failed with status: ${res.status}`);
-            }
-
-            const _text = await res.text();
-            let responseData = {};
-            if (_text) {
-              try {
-                responseData = JSON.parse(_text);
-              } catch (parseErr) {
-                console.warn('Invalid JSON from find-client webhook:', parseErr, _text);
-                showNotification('Received non-JSON response from find-client webhook (see console).', 'error');
-                responseData = {};
-              }
-            } else {
-              console.warn('Empty response body from find-client webhook, status:', res.status);
-            }
-
-            const clientFound = responseData && responseData.status === "success" && responseData.client;
-
-            // Reset form fields before populating/moving
-            esignForm.reset(); 
-            clientPhoneInput.removeAttribute('required'); 
-
-            if (clientFound) {
-              const client = responseData.client;
-
-              // 2. Map and Populate Fields
-              const fullName = client.client_name || client.customerName || '';
-              if (fullName) {
-                const parts = fullName.trim().split(/\s+/);
-                const first = parts[0] || '';
-                const last = parts.length > 1 ? parts[parts.length - 1] : '';
-                document.getElementById('fname_primary').value = first;
-                document.getElementById('lname_primary').value = last;
-              } else {
-                document.getElementById('fname_primary').value = '';
-                document.getElementById('lname_primary').value = '';
-              }
-
-              document.getElementById('client_email').value = client.client_email || '';
-              // Prefill phone if provided by the API; otherwise, if the user searched by phone, reuse that value
-              document.getElementById('client_phone').value = client.client_phone || (searchType === 'phone' ? searchValue : '');
-
-              showNotification(`✅ Client "${fullName || client.customerName || ''}" details found and pre-filled!`, "success");
-            } else {
-              // If not found (or status is not success), proceed to manual entry
-              document.getElementById('client_phone').value = (searchType === 'phone' ? searchValue : '');
-              document.getElementById('fname_primary').value = '';
-              document.getElementById('lname_primary').value = '';
-              showNotification("Client not found. Please review and enter details manually.", "error");
-            }
+            const data = await res.json();
             
-            // 3. Move to Step 2
+            if (data.status === "success" && data.client) {
+                const c = data.client;
+                const parts = (c.client_name || c.customerName || "").split(" ");
+                document.getElementById('fname_primary').value = parts[0] || "";
+                document.getElementById('lname_primary').value = parts.slice(1).join(" ") || "";
+                document.getElementById('client_email').value = c.client_email || "";
+                document.getElementById('client_phone').value = c.client_phone || (type==='phone'?val:"");
+                if(c.address) document.getElementById('client_address').value = c.address;
+                showNotification("✅ Client Found!", "success");
+            } else {
+                ['fname_primary', 'lname_primary', 'client_email'].forEach(id => document.getElementById(id).value = '');
+                showNotification("Client not found. Manual entry required.", "error");
+            }
             updateStep(2);
-
-        } catch (err) {
-          console.error("Fetch Error:", err);
-          buttonEl.disabled = false;
-          buttonEl.innerHTML = '<span class="emoji">🔎</span> Find Client';
-
-          // Use the searchValue where appropriate (phone only if phone search)
-          document.getElementById('client_phone').value = (searchType === 'phone' ? searchValue : '');
-          document.getElementById('fname_primary').value = '';
-          document.getElementById('lname_primary').value = '';
-          updateStep(2);
-          showNotification("⚠️ Connection/Search error. Please review details manually.", "error");
+        } catch (e) {
+            console.error(e);
+            showNotification("Search error. Enter manually.", "error");
+            updateStep(2);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
         }
     }
 
-    // Event listener for Find Client by Phone button
-    findClientPhoneBtn.addEventListener('click', async () => {
-        const searchValue = searchPhoneInput.value.trim();
-        await performSearch(searchValue, 'phone', findClientPhoneBtn);
-    });
-
-    // Event listener for Find Client by ID button
-    findClientIdBtn.addEventListener('click', async () => {
-        const searchValue = searchClientIdInput.value.trim();
-        await performSearch(searchValue, 'client_id', findClientIdBtn);
-    });
-
-    // Action when "Proceed to Manual Entry" is clicked
-    proceedManualBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      esignForm.reset();
-      clientPhoneInput.removeAttribute('required');
-      searchPhoneInput.value = '';
-      searchClientIdInput.value = '';
-      updateStep(2);
-    });
+    document.getElementById('findClientPhoneBtn').onclick = () => performSearch(document.getElementById('search_phone').value.trim(), 'phone', document.getElementById('findClientPhoneBtn'));
+    document.getElementById('findClientIdBtn').onclick = () => performSearch(document.getElementById('search_client_id').value.trim(), 'client_id', document.getElementById('findClientIdBtn'));
+    document.getElementById('proceedManualBtn').onclick = (e) => { e.preventDefault(); updateStep(2); };
 
     // ----------------------------------------------------
-    // STEP 2 HANDLERS (Review Details)
+    // FINAL SUBMISSION (GENERATE)
     // ----------------------------------------------------
-    
-    // Back to Search Button (Step 2 -> Step 1)
-    backToSearchBtn.addEventListener('click', () => {
-        updateStep(1); 
-    });
-
-    // 1. Event Listener for the full form submission (Step 2 logic)
-    esignForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      
-      const formData = new FormData(esignForm);
-      const data = Object.fromEntries(formData.entries());
-
-      submitBtn.disabled = true;
-      btnText.innerHTML = '<span class="spinner"></span>Generating Document...';
-
-      try {
-        console.debug('ESign - request body:', data);
-        const res = await fetch(ESIGN_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        const _text = await res.text();
-        let responseData = {};
-        if (_text) {
-          try {
-            responseData = JSON.parse(_text);
-          } catch (parseErr) {
-            console.warn('Invalid JSON from esign webhook:', parseErr, _text);
-            showNotification('Received non-JSON response from esign webhook (see console).', 'error');
-            responseData = {};
-          }
-        }
-
-        if (res.ok) {
-          finalizationData = responseData || {};
-
-          showNotification("✅ Document created successfully!", "success");
-
-          // Update the "Edit Document" link if we have a documentId
-          if (responseData && responseData.documentId) {
-            editDocLink.href = `https://docs.google.com/document/d/${responseData.documentId}/edit`;
-          } else {
-            console.warn('No documentId returned from webhook; cannot build edit link.');
-          }
-
-          // Move to Step 3 (Review/Finalize)
-          updateStep(3);
-
-        } else {
-          console.warn('ESign webhook returned non-OK status', res.status, _text);
-          showNotification("❌ Failed to generate document. Please try again.", "error");
-        }
-      } catch (err) {
-        console.error(err);
-        showNotification("⚠️ Connection error. Please check your network.", "error");
-      }
-    });
-    
-    // ----------------------------------------------------
-    // STEP 3 HANDLERS (Review/Finalize)
-    // ----------------------------------------------------
-
-    // Back Button Logic (Step 3 -> Step 2)
-    backBtn.addEventListener('click', () => {
-        updateStep(2); // Go back to Review Details (Step 2)
-        submitBtn.disabled = false;
-        btnText.textContent = "Generate & Send Link";
-        sendMailBtn.disabled = false;
-        sendBtnText.textContent = "Looks Good, Send Mail";
-    });
-
-    // Send Mail Button Logic
-    sendMailBtn.addEventListener("click", async () => {
-      sendMailBtn.disabled = true;
-      sendBtnText.innerHTML = '<span class="spinner"></span>Sending...';
-
-      try {
-        const res = await fetch(ESIGN_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(finalizationData) // Send the stored data
-        });
-
-        if (res.ok) {
-          showNotification("✅ Email sent successfully!", "success");
-          reviewSection.innerHTML = '<h3 style="color: #333;">All Done!</h3><p style="color: #666;">The email has been sent to the client. You can close this window now.</p>';
-        } else {
-          showNotification("❌ Failed to send email. Please try again.", "error");
-        }
-      } catch (err) {
-        console.error(err);
-        showNotification("⚠️ Connection error while sending email.", "error");
-      } finally {
-        if (reviewSection.querySelector('#sendMailBtn')) {
-            sendMailBtn.disabled = false;
-            sendBtnText.textContent = "Looks Good, Send Mail";
-        }
-      }
-    });
-
-    // ----------------------------------------------------
-    // INITIALIZATION
-    // ----------------------------------------------------
-    document.addEventListener('DOMContentLoaded', () => {
-        updateStep(1);
+    esignForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const btnTxt = document.getElementById('btnText');
         
-      // Attach change listeners for dynamic fields
-      selectRetainer.addEventListener('change', handleRetainerRequirements);
-      paymentMilestones.addEventListener('change', handleMilestonesVisibility);
+        btn.disabled = true;
+        btnTxt.innerHTML = '<span class="spinner"></span>Generating...';
 
-    });
+        const formData = new FormData(esignForm);
+        const jsonData = {};
+
+        // 1. Build JSON Data (Handle Arrays)
+        formData.forEach((value, key) => {
+            if(key.endsWith('[]')) {
+                const cleanKey = key.slice(0, -2);
+                if(!jsonData[cleanKey]) {
+                    jsonData[cleanKey] = [];
+                }
+                jsonData[cleanKey].push(value);
+            } else {
+                jsonData[key] = value;
+            }
+        });
+
+        // ------------------------------------------------------
+        // FIX: RETAINER TYPE OVERRIDE (Send Name instead of ID)
+        // ------------------------------------------------------
+        const sel = document.getElementById('select_retainer');
+        if (sel.selectedIndex > 0) {
+            let text = sel.options[sel.selectedIndex].text;
+            // Remove "1 : " prefix to send clean text
+            if(text.indexOf(" : ") > -1) {
+                text = text.split(" : ")[1];
+            }
+            jsonData['retainer_type'] = text;
+        }
+
+        console.log("Sending Payload:", jsonData);
+
+        try {
+            const res = await fetch(ESIGN_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonData)
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                finalizationData = result;
+                if(result.documentId) {
+                    document.getElementById('editDocLink').href = `https://docs.google.com/document/d/${result.documentId}/edit`;
+                }
+                updateStep(4);
+                showNotification("✅ Document Generated!", "success");
+            } else {
+                showNotification("Generation Failed", "error");
+            }
+        } catch (err) {
+            showNotification("Connection Error", "error");
+        } finally {
+            btn.disabled = false;
+            btnTxt.textContent = "Generate & Send Link";
+        }
+    };
+
+    // ----------------------------------------------------
+    // SEND EMAIL ACTION
+    // ----------------------------------------------------
+    document.getElementById('sendMailBtn').onclick = async () => {
+        const btn = document.getElementById('sendMailBtn');
+        const btnTxt = document.getElementById('sendBtnText');
+        const originalTxt = btnTxt.textContent;
+        
+        btn.disabled = true;
+        btnTxt.innerHTML = '<span class="spinner"></span>Sending...';
+
+        try {
+            const res = await fetch(ESIGN_WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(finalizationData)
+            });
+
+            if (res.ok) {
+                document.getElementById('step4_container').innerHTML = `<h3>✅ Email Sent!</h3><p>You may close this window.</p>`;
+                showNotification("✅ Sent successfully!", "success");
+            } else {
+                showNotification("Failed to send", "error");
+                btn.disabled = false;
+                btnTxt.textContent = originalTxt;
+            }
+        } catch (e) {
+            showNotification("Error sending email", "error");
+            btn.disabled = false;
+            btnTxt.textContent = originalTxt;
+        }
+    };
+
+    updateStep(1);
   </script>
 </body>
 </html>
