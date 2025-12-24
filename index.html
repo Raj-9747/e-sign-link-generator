@@ -132,9 +132,9 @@
       transition: all 0.3s ease;
     }
     
-    form { display: flex; flex-direction: column; gap: 1.5rem; } /* Increased gap from 1.2 to 1.5 */
+    form { display: flex; flex-direction: column; gap: 1.2rem; }
     .form-group { position: relative; }
-    .input-row { display: flex; gap: 1rem; }
+    .input-row { display: flex; gap: 1rem; margin-bottom: 0.5rem; }
     .input-row > div { flex: 1; }
 
     select, input[type="text"], input[type="email"], input[type="date"], input[type="number"] {
@@ -145,7 +145,6 @@
       font-size: 1rem;
       background: #f9f9f9;
       transition: all 0.3s ease;
-      margin-top: 0.4rem;
     }
     
     input:read-only { background-color: #eaeaea; color: #666; cursor: not-allowed; }
@@ -156,25 +155,19 @@
       background: white;
     }
 
-    label {
-      font-weight: 600;
-      color: #444;
-      font-size: 0.95rem;
-      margin-left: 2px;
+    /* Toggler Switch Style */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.2rem;
+      background: #f9f9f9;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
     }
-
-    /* Toggler Switch Styles */
-    .toggle-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.9rem 1.2rem;
-        background: #f9f9f9;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        margin-top: 0.8rem; /* Space between Lead By input and Toggle box */
-    }
-    .toggle-label-text { font-weight: 600; color: #3f51b5; }
+    .toggle-label { font-weight: 600; color: #3f51b5; font-size: 1rem; }
     .switch {
       position: relative;
       display: inline-block;
@@ -199,7 +192,7 @@
       transition: .4s;
       border-radius: 50%;
     }
-    input:checked + .slider { background: #eb3349; } /* Red for Urgent */
+    input:checked + .slider { background-color: #eb3349; }
     input:checked + .slider:before { transform: translateX(26px); }
 
     /* Buttons */
@@ -432,7 +425,6 @@
             </div>
         </div>
 
-        <!-- Client Name -->
         <div class="input-row">
             <div class="form-group">
               <label id="lbl_fname">Client First Name</label>
@@ -444,7 +436,6 @@
             </div>
         </div>
 
-        <!-- Client Contact -->
         <div class="input-row">
             <div class="form-group">
                 <label id="lbl_email">Client Email</label>
@@ -463,14 +454,12 @@
         </div>
 
         <!-- NEW FIELD: Urgent Toggler Container -->
-        <div class="form-group">
-            <div class="toggle-wrapper">
-                <span class="toggle-label-text">Urgent Application?</span>
-                <label class="switch">
-                    <input type="checkbox" id="urgent_toggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
+        <div class="toggle-container">
+            <span class="toggle-label">Urgent Application?</span>
+            <label class="switch">
+                <input type="checkbox" id="urgent_toggle">
+                <span class="slider"></span>
+            </label>
         </div>
         
         <!-- Dynamic Sections -->
@@ -565,8 +554,10 @@
         <div class="form-group conditional-section" id="sec_payment_phase" style="display: none;">
           <h4 style="margin-bottom:0.75rem; color:#3f51b5;">Payment Phase Details (Optional)</h4>
           <div id="payment_phase_rows_container"></div>
+          <p style="font-size:0.9rem; color:#666; margin-top:0.5rem;">These fields are optional. When milestones are selected the inputs will be submitted with keys like <code>retainer_desc_1</code>, <code>retainer_lineitem_without_tax_1</code>, and <code>retainer_dueon_1</code>.</p>
         </div>
         
+        <!-- Navigation Button for Step 2 -->
         <div style="margin-top: 2rem;">
             <button type="button" id="goToStep3Btn" class="full-submit-button">Next →</button>
         </div>
@@ -579,31 +570,99 @@
         </button>
 
         <h3 style="text-align: center; margin-bottom: 1rem;">Select Documents</h3>
-        <p style="text-align: center; color: #666; margin-bottom: 2rem;">Check the documents required for this application.</p>
+        <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+            Check the documents required for this application.
+        </p>
 
+        <!-- Permanent Application Section (8 items restored) -->
         <div class="doc-category-title">Permanent Application</div>
         <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Non Express Entry Application- Annex A - Copy"> Non Express Entry Application- Annex A</label>
-            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Federal PR Application- Annex A"> Federal PR Application- Annex A</label>
-            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Express Entry Application- Annex A"> Express Entry Application- Annex A</label>
-            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Canadian Experience Class Application- Annex A"> Canadian Experience Class Application- Annex A</label>
-            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Spousal- Common Law Sponsorship Application- Annex A"> Spousal Sponsorship Application</label>
-            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Provincial Nominee Program Application- Annex A"> Provincial Nominee Program Application</label>
-            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Parents-Grandparents Sponsorship Application- Annex A"> Parents-Grandparents Sponsorship</label>
-            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="LMIA- Annex A"> LMIA- Annex A</label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Non Express Entry Application- Annex A - Copy"> Non Express Entry Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Federal PR Application- Annex A"> Federal PR Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Express Entry Application- Annex A"> Express Entry Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Canadian Experience Class Application- Annex A"> Canadian Experience Class Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Spousal- Common Law Sponsorship Application- Annex A"> Spousal- Common Law Sponsorship Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Provincial Nominee Program Application- Annex A"> Provincial Nominee Program Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="Parents-Grandparents Sponsorship Application- Annex A"> Parents-Grandparents Sponsorship Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="permanent_docs[]" value="LMIA- Annex A"> LMIA- Annex A
+            </label>
         </div>
 
+        <!-- Temporary Application Section (19 items restored) -->
         <div class="doc-category-title">Temporary Application</div>
         <div class="checkbox-grid">
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Visitor Record (change of status) Application- Annex A"> Visitor Record (change of status)</label>
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Concurrent Work Permit Application- Annex A"> Concurrent Work Permit Application</label>
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Bridging Open Work Permit (BOWP) Application- Annex A"> Bridging Open Work Permit (BOWP)</label>
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Visitor Visa (Oustide canada) Application- Annex A"> Visitor Visa (Outside canada)</label>
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Canadian Citizenship Application- Annex A"> Canadian Citizenship Application</label>
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Spousal Open Work Permit Application (SOWP)- Annex A"> Spousal Open Work Permit (SOWP)</label>
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Restoration of Status Application- Annex A"> Restoration of Status Application</label>
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Post Graduate Work Permit Application- Annex A"> Post Graduate Work Permit Application</label>
-            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Study Permit Application- Annex A"> Study Permit Application</label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Visitor Record (change of status) Application- Annex A"> Visitor Record (change of status) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Concurrent Work Permit Application- Annex A"> Concurrent Work Permit Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Bridging Open Work Permit (BOWP) Application- Annex A"> Bridging Open Work Permit (BOWP) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Permanent Resident Card (PR) Application- Annex A"> Permanent Resident Card (PR) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Visitor Visa (Oustide canada) Application- Annex A"> Visitor Visa (Oustide canada) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Parents-Grandparents Supervisa Application- Annex A"> Parents-Grandparents Supervisa Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Canadian Citizenship Application- Annex A"> Canadian Citizenship Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Spousal Open Work Permit Extension Application (SOWP)- Annex A"> Spousal Open Work Permit Extension Application (SOWP)- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Spousal Open Work Permit Application (SOWP)- Annex A"> Spousal Open Work Permit Application (SOWP)- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="SCLPC Work Permit Application- Annex A"> SCLPC Work Permit Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="LMIA based Work Permit Extension Application- Annex A"> LMIA based Work Permit Extension Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="LMIA based Work Permit Application- Annex A"> LMIA based Work Permit Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Restoration of Status Application- Annex A"> Restoration of Status Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Post Graduate Work Permit Extension Application- Annex A"> Post Graduate Work Permit Extension Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Post Graduate Work Permit Application- Annex A"> Post Graduate Work Permit Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Permanent Resident Travel Document (PRTD) Application- Annex A"> Permanent Resident Travel Document (PRTD) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Study Permit Extension Application- Annex A"> Study Permit Extension Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Temporary Resident Visa (TRV) Application- Annex A"> Temporary Resident Visa (TRV) Application- Annex A
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" name="temporary_docs[]" value="Study Permit Application- Annex A"> Study Permit Application- Annex A
+            </label>
         </div>
 
         <input type="hidden" name="esign_status" value="false" />
@@ -620,10 +679,20 @@
     <!-- ------------------- Step 4: Final Review ------------------- -->
     <div id="step4_container" style="display: none; text-align: center;">
       <h3 style="margin-bottom: 1rem; color: #333;">Document Prepared</h3>
-      <p style="margin-bottom: 2rem; color: #666;">Your document has been generated. Please review it before sending.</p>
-      <a href="#" id="editDocLink" target="_blank" class="button-style" style="margin-bottom: 1rem;">Review & Edit Document</a>
-      <button id="backBtn" class="secondary-button" style="margin-top: 1rem;">Go Back to Edit</button>
-      <button id="sendMailBtn" class="button-style" style="margin-top: 1rem;"><span id="sendBtnText">Looks Good, Send Mail</span></button>
+      <p style="margin-bottom: 2rem; color: #666;">
+        Your document has been generated. Please review it before sending.
+      </p>
+      <a href="#" id="editDocLink" target="_blank" class="button-style" style="margin-bottom: 1rem;">
+        Review & Edit Document
+      </a>
+      
+      <button id="backBtn" class="secondary-button" style="margin-top: 1rem;">
+        Go Back to Edit
+      </button>
+
+      <button id="sendMailBtn" class="button-style" style="margin-top: 1rem;">
+        <span id="sendBtnText">Looks Good, Send Mail</span>
+      </button>
     </div>
   </div>
 
@@ -678,7 +747,6 @@
         }
     });
 
-    // Tax Logic
     const summaryFeesInput = document.getElementById('payment_terms_summary_fees');
     const includeProTaxes = document.getElementById('include_pro_taxes');
     const professionalTaxesInput = document.getElementById('professional_taxes');
@@ -698,7 +766,6 @@
     if (summaryFeesInput) summaryFeesInput.addEventListener('input', recalcProfessionalTaxes);
     if (includeProTaxes) includeProTaxes.addEventListener('change', recalcProfessionalTaxes);
 
-    // Milestones
     if (selectPaymentPhase) {
       selectPaymentPhase.addEventListener('change', () => {
         const raw = selectPaymentPhase.value;
@@ -709,6 +776,7 @@
           document.getElementById('sec_payment_phase').style.display = 'block';
           for (let i = 1; i <= count; i++) {
             const row = document.createElement('div');
+            row.style.marginBottom = "0.8rem";
             row.innerHTML = `<div class="form-group"><label>Milestone ${i} Desc</label><input type="text" name="retainer_desc_${i}" value="Milestone ${i}" /></div><div class="input-row"><div class="form-group"><label>Amount</label><input type="text" name="retainer_lineitem_without_tax_${i}" /></div><div class="form-group"><label>Due</label><input type="text" name="retainer_dueon_${i}" /></div></div>`;
             container.appendChild(row);
           }
@@ -716,7 +784,6 @@
       });
     }
 
-    // Search Client Logic
     async function performSearch(val, type, btn) {
         if(!val) return showNotification("Please enter a value", "error");
         btn.disabled = true;
@@ -746,13 +813,11 @@
     document.getElementById('findClientIdBtn').onclick = () => performSearch(document.getElementById('search_client_id').value.trim(), 'client_id', document.getElementById('findClientIdBtn'));
     document.getElementById('proceedManualBtn').onclick = (e) => { e.preventDefault(); updateStep(2); };
 
-    // Navigation
     document.getElementById('goToStep3Btn').onclick = () => { if(esignForm.reportValidity()) updateStep(3); };
     document.getElementById('backToSearchBtn').onclick = () => updateStep(1);
     document.getElementById('backToStep2Btn').onclick = () => updateStep(2);
     document.getElementById('backBtn').onclick = () => updateStep(3);
 
-    // Final Generation
     esignForm.onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
@@ -769,10 +834,9 @@
             } else { jsonData[key] = value; }
         });
 
-        // Add Toggle Status
+        // Toggle handling
         jsonData['urgent_status'] = document.getElementById('urgent_toggle').checked ? "Urgent" : "Non-Urgent";
 
-        // Fix retainer name
         const sel = document.getElementById('select_retainer');
         if (sel.selectedIndex > 0) {
             let text = sel.options[sel.selectedIndex].text;
@@ -790,9 +854,9 @@
                 finalizationData = result;
                 if(result.documentId) document.getElementById('editDocLink').href = `https://docs.google.com/document/d/${result.documentId}/edit`;
                 updateStep(4);
-                showNotification("✅ Generated!", "success");
-            } else { showNotification("Failed", "error"); }
-        } catch (err) { showNotification("Error", "error"); } finally { btn.disabled = false; document.getElementById('btnText').textContent = "Generate & Send Link"; }
+                showNotification("✅ Document Generated!", "success");
+            } else { showNotification("Generation Failed", "error"); }
+        } catch (err) { showNotification("Connection Error", "error"); } finally { btn.disabled = false; document.getElementById('btnText').textContent = "Generate & Send Link"; }
     };
 
     document.getElementById('sendMailBtn').onclick = async () => {
