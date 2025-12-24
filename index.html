@@ -132,7 +132,7 @@
       transition: all 0.3s ease;
     }
     
-    form { display: flex; flex-direction: column; gap: 1.2rem; }
+    form { display: flex; flex-direction: column; gap: 1.5rem; } /* Increased gap from 1.2 to 1.5 */
     .form-group { position: relative; }
     .input-row { display: flex; gap: 1rem; }
     .input-row > div { flex: 1; }
@@ -145,6 +145,7 @@
       font-size: 1rem;
       background: #f9f9f9;
       transition: all 0.3s ease;
+      margin-top: 0.4rem;
     }
     
     input:read-only { background-color: #eaeaea; color: #666; cursor: not-allowed; }
@@ -154,6 +155,52 @@
       border-color: #667eea;
       background: white;
     }
+
+    label {
+      font-weight: 600;
+      color: #444;
+      font-size: 0.95rem;
+      margin-left: 2px;
+    }
+
+    /* Toggler Switch Styles */
+    .toggle-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1.2rem;
+        background: #f9f9f9;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        margin-top: 0.8rem; /* Space between Lead By input and Toggle box */
+    }
+    .toggle-label-text { font-weight: 600; color: #3f51b5; }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background: #eb3349; } /* Red for Urgent */
+    input:checked + .slider:before { transform: translateX(26px); }
 
     /* Buttons */
     .full-submit-button, .button-style {
@@ -349,7 +396,6 @@
         <!-- Retainer Selection -->
         <div class="form-group">
             <label for="select_retainer" style="color: #3f51b5;">Select Retainer Type</label>
-            <!-- Values kept as numbers for easy logic handling, Text will be sent to backend -->
             <select id="select_retainer" name="retainer_type" required>
                 <option value="">-- Select Option --</option>
                 <option value="1">1 : Initial Consultation- TDOT</option>
@@ -368,18 +414,25 @@
             <option value="2">Milestone 2</option>
             <option value="3">Milestone 3</option>
             <option value="4">Milestone 4</option>
-            <!-- <option value="5">Milestone 5</option> -->
           </select>
         </div>
         
         <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 0.5rem 0 1.5rem;">
 
-        <!-- Common Fields -->
-        <div class="form-group">
-          <label for="agreement_date">Agreement Date</label>
-          <input type="date" id="agreement_date" name="agreement_date" required />
+        <!-- Common Fields Row 1 -->
+        <div class="input-row">
+            <div class="form-group">
+              <label for="agreement_date">Agreement Date</label>
+              <input type="date" id="agreement_date" name="agreement_date" required />
+            </div>
+            <!-- NEW FIELD: Status Expiry Date -->
+            <div class="form-group">
+              <label for="status_expiry_date">Status Expiry Date</label>
+              <input type="date" id="status_expiry_date" name="status_expiry_date" required />
+            </div>
         </div>
 
+        <!-- Client Name -->
         <div class="input-row">
             <div class="form-group">
               <label id="lbl_fname">Client First Name</label>
@@ -391,6 +444,7 @@
             </div>
         </div>
 
+        <!-- Client Contact -->
         <div class="input-row">
             <div class="form-group">
                 <label id="lbl_email">Client Email</label>
@@ -399,6 +453,23 @@
             <div class="form-group">
                 <label id="lbl_phone">Client Phone</label>
                 <input type="text" id="client_phone" name="client_phone" placeholder="+1 (555) 123-4567" required />
+            </div>
+        </div>
+
+        <!-- NEW FIELD: Lead By -->
+        <div class="form-group">
+            <label for="lead_by">Lead By</label>
+            <input type="text" id="lead_by" name="lead_by" placeholder="Person who generated this lead" required />
+        </div>
+
+        <!-- NEW FIELD: Urgent Toggler Container -->
+        <div class="form-group">
+            <div class="toggle-wrapper">
+                <span class="toggle-label-text">Urgent Application?</span>
+                <label class="switch">
+                    <input type="checkbox" id="urgent_toggle">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
         
@@ -491,14 +562,11 @@
             </div>
         </div>
         
-        <!-- Dynamic: Payment Phase Rows (hidden until a phase selected) -->
         <div class="form-group conditional-section" id="sec_payment_phase" style="display: none;">
           <h4 style="margin-bottom:0.75rem; color:#3f51b5;">Payment Phase Details (Optional)</h4>
           <div id="payment_phase_rows_container"></div>
-          <p style="font-size:0.9rem; color:#666; margin-top:0.5rem;">These fields are optional. When milestones are selected the inputs will be submitted with keys like <code>retainer_desc_1</code>, <code>retainer_lineitem_without_tax_1</code>, and <code>retainer_dueon_1</code> (one set per milestone).</p>
         </div>
         
-        <!-- Navigation Button for Step 2 -->
         <div style="margin-top: 2rem;">
             <button type="button" id="goToStep3Btn" class="full-submit-button">Next →</button>
         </div>
@@ -511,100 +579,31 @@
         </button>
 
         <h3 style="text-align: center; margin-bottom: 1rem;">Select Documents</h3>
-        <p style="text-align: center; color: #666; margin-bottom: 2rem;">
-            Check the documents required for this application.<br>
-            <span style="font-size: 0.9rem; color:#888;">Selected items will be sent to the backend.</span>
-        </p>
+        <p style="text-align: center; color: #666; margin-bottom: 2rem;">Check the documents required for this application.</p>
 
-        <!-- Permanent Application Section -->
         <div class="doc-category-title">Permanent Application</div>
         <div class="checkbox-grid">
-            <label class="checkbox-item">
-                <input type="checkbox" name="permanent_docs[]" value="Non Express Entry Application- Annex A - Copy"> Non Express Entry Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="permanent_docs[]" value="Federal PR Application- Annex A"> Federal PR Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="permanent_docs[]" value="Express Entry Application- Annex A"> Express Entry Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="permanent_docs[]" value="Canadian Experience Class Application- Annex A"> Canadian Experience Class Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="permanent_docs[]" value="Spousal- Common Law Sponsorship Application- Annex A"> Spousal- Common Law Sponsorship Application
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="permanent_docs[]" value="Provincial Nominee Program Application- Annex A"> Provincial Nominee Program Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="permanent_docs[]" value="Parents-Grandparents Sponsorship Application- Annex A"> Parents-Grandparents Sponsorship Application
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="permanent_docs[]" value="LMIA- Annex A"> LMIA- Annex A
-            </label>
+            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Non Express Entry Application- Annex A - Copy"> Non Express Entry Application- Annex A</label>
+            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Federal PR Application- Annex A"> Federal PR Application- Annex A</label>
+            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Express Entry Application- Annex A"> Express Entry Application- Annex A</label>
+            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Canadian Experience Class Application- Annex A"> Canadian Experience Class Application- Annex A</label>
+            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Spousal- Common Law Sponsorship Application- Annex A"> Spousal Sponsorship Application</label>
+            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Provincial Nominee Program Application- Annex A"> Provincial Nominee Program Application</label>
+            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="Parents-Grandparents Sponsorship Application- Annex A"> Parents-Grandparents Sponsorship</label>
+            <label class="checkbox-item"><input type="checkbox" name="permanent_docs[]" value="LMIA- Annex A"> LMIA- Annex A</label>
         </div>
 
-        <!-- Temporary Application Section -->
         <div class="doc-category-title">Temporary Application</div>
         <div class="checkbox-grid">
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Visitor Record (change of status) Application- Annex A"> Visitor Record (change of status) Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Concurrent Work Permit Application- Annex A"> Concurrent Work Permit Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Bridging Open Work Permit (BOWP) Application- Annex A"> Bridging Open Work Permit (BOWP) Application
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Permanent Resident Card (PR) Application- Annex A"> Permanent Resident Card (PR) Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Visitor Visa (Oustide canada) Application- Annex A"> Visitor Visa (Outside canada) Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Parents-Grandparents Supervisa Application- Annex A"> Parents-Grandparents Supervisa Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Canadian Citizenship Application- Annex A"> Canadian Citizenship Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Spousal Open Work Permit Extension Application (SOWP)- Annex A"> Spousal Open Work Permit Extension Application
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Spousal Open Work Permit Application (SOWP)- Annex A"> Spousal Open Work Permit Application (SOWP)
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="SCLPC Work Permit Application- Annex A"> SCLPC Work Permit Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="LMIA based Work Permit Extension Application- Annex A"> LMIA based Work Permit Extension Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="LMIA based Work Permit Application- Annex A"> LMIA based Work Permit Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Restoration of Status Application- Annex A"> Restoration of Status Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Post Graduate Work Permit Extension Application- Annex A"> Post Graduate Work Permit Extension Application
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Post Graduate Work Permit Application- Annex A"> Post Graduate Work Permit Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Permanent Resident Travel Document (PRTD) Application- Annex A"> Permanent Resident Travel Document (PRTD) Application
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Study Permit Extension Application- Annex A"> Study Permit Extension Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Temporary Resident Visa (TRV) Application- Annex A"> Temporary Resident Visa (TRV) Application- Annex A
-            </label>
-            <label class="checkbox-item">
-                <input type="checkbox" name="temporary_docs[]" value="Study Permit Application- Annex A"> Study Permit Application- Annex A
-            </label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Visitor Record (change of status) Application- Annex A"> Visitor Record (change of status)</label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Concurrent Work Permit Application- Annex A"> Concurrent Work Permit Application</label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Bridging Open Work Permit (BOWP) Application- Annex A"> Bridging Open Work Permit (BOWP)</label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Visitor Visa (Oustide canada) Application- Annex A"> Visitor Visa (Outside canada)</label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Canadian Citizenship Application- Annex A"> Canadian Citizenship Application</label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Spousal Open Work Permit Application (SOWP)- Annex A"> Spousal Open Work Permit (SOWP)</label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Restoration of Status Application- Annex A"> Restoration of Status Application</label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Post Graduate Work Permit Application- Annex A"> Post Graduate Work Permit Application</label>
+            <label class="checkbox-item"><input type="checkbox" name="temporary_docs[]" value="Study Permit Application- Annex A"> Study Permit Application</label>
         </div>
 
         <input type="hidden" name="esign_status" value="false" />
@@ -621,50 +620,22 @@
     <!-- ------------------- Step 4: Final Review ------------------- -->
     <div id="step4_container" style="display: none; text-align: center;">
       <h3 style="margin-bottom: 1rem; color: #333;">Document Prepared</h3>
-      <p style="margin-bottom: 2rem; color: #666;">
-        Your document has been generated. Please review it before sending.
-      </p>
-      <a href="#" id="editDocLink" target="_blank" class="button-style" style="margin-bottom: 1rem;">
-        Review & Edit Document
-      </a>
-      
-      <button id="backBtn" class="secondary-button" style="margin-top: 1rem;">
-        Go Back to Edit
-      </button>
-
-      <button id="sendMailBtn" class="button-style" style="margin-top: 1rem;">
-        <span id="sendBtnText">Looks Good, Send Mail</span>
-      </button>
+      <p style="margin-bottom: 2rem; color: #666;">Your document has been generated. Please review it before sending.</p>
+      <a href="#" id="editDocLink" target="_blank" class="button-style" style="margin-bottom: 1rem;">Review & Edit Document</a>
+      <button id="backBtn" class="secondary-button" style="margin-top: 1rem;">Go Back to Edit</button>
+      <button id="sendMailBtn" class="button-style" style="margin-top: 1rem;"><span id="sendBtnText">Looks Good, Send Mail</span></button>
     </div>
   </div>
 
   <script>
-    // ----------------------------------------------------
-    // CONFIGURATION
-    // ----------------------------------------------------
     const ESIGN_WEBHOOK_URL = "https://n8n.srv898271.hstgr.cloud/webhook/create-and-send-esign-link";
     const FIND_CLIENT_WEBHOOK_URL = "https://n8n.srv898271.hstgr.cloud/webhook/find-client-details-esign";
 
-    const containers = {
-      1: document.getElementById('step1_container'),
-      2: document.getElementById('step2_container'),
-      3: document.getElementById('step3_container'),
-      4: document.getElementById('step4_container')
-    };
-    
-    const progressItems = {
-      1: document.getElementById('progress_step1'),
-      2: document.getElementById('progress_step2'),
-      3: document.getElementById('progress_step3'),
-      4: document.getElementById('progress_step4')
-    };
-
+    const containers = { 1: document.getElementById('step1_container'), 2: document.getElementById('step2_container'), 3: document.getElementById('step3_container'), 4: document.getElementById('step4_container') };
+    const progressItems = { 1: document.getElementById('progress_step1'), 2: document.getElementById('progress_step2'), 3: document.getElementById('progress_step3'), 4: document.getElementById('progress_step4') };
     const esignForm = document.getElementById("esignForm");
     let finalizationData = {};
 
-    // ----------------------------------------------------
-    // HELPER FUNCTIONS
-    // ----------------------------------------------------
     function showNotification(message, type) {
       const notification = document.createElement("div");
       notification.className = `notification ${type}`;
@@ -676,76 +647,38 @@
     function updateStep(stepNumber) {
       Object.values(containers).forEach(el => el.style.display = 'none');
       containers[stepNumber].style.display = 'block';
-
       Object.values(progressItems).forEach(el => el.classList.remove('active'));
-      for (let i = 1; i <= stepNumber; i++) {
-        progressItems[i].classList.add('active');
-      }
+      for (let i = 1; i <= stepNumber; i++) progressItems[i].classList.add('active');
       window.scrollTo(0, 0);
     }
 
     function hideAllSections() {
-      ['sec_app_type', 'sec_client_address', 'sec_consultation', 'sec_company', 'sec_inviter', 'sec_financials', 'sec_payment_phase']
-      .forEach(id => document.getElementById(id).style.display = 'none');
+      ['sec_app_type', 'sec_client_address', 'sec_consultation', 'sec_company', 'sec_inviter', 'sec_financials', 'sec_payment_phase'].forEach(id => document.getElementById(id).style.display = 'none');
     }
 
-    // ----------------------------------------------------
-    // DYNAMIC FORM LOGIC
-    // ----------------------------------------------------
     const selectRetainer = document.getElementById('select_retainer');
     const selectPaymentPhase = document.getElementById('select_payment_phase');
     
-    const lblFname = document.getElementById('lbl_fname');
-    const lblLname = document.getElementById('lbl_lname');
-    const lblPhone = document.getElementById('lbl_phone');
-    const lblEmail = document.getElementById('lbl_email');
-    const lblClientAddress = document.getElementById('lbl_client_address');
-    const inputAppType = document.getElementById('application_type');
-
     selectRetainer.addEventListener('change', () => {
         const val = selectRetainer.value;
         const text = selectRetainer.options[selectRetainer.selectedIndex].text;
-        
         hideAllSections();
-        
-        // Default Labels
-        lblFname.textContent = "Client First Name";
-        lblLname.textContent = "Client Last Name";
-        lblEmail.textContent = "Client Email";
-        lblPhone.textContent = "Client Phone";
-        lblClientAddress.textContent = "Address";
-
         if (val === '1') {
             document.getElementById('sec_client_address').style.display = 'block';
             document.getElementById('sec_consultation').style.display = 'block';
-            lblFname.textContent = "Name (First)"; lblLname.textContent = "Name (Last)";
-            lblPhone.textContent = "Tel"; lblEmail.textContent = "E-mail";
         } else if (val === '2') {
             document.getElementById('sec_company').style.display = 'block';
             document.getElementById('sec_financials').style.display = 'block';
-            lblFname.textContent = "Legal Rep First Name"; lblLname.textContent = "Legal Rep Last Name";
-            lblPhone.textContent = "Legal Rep Phone"; lblEmail.textContent = "Legal Rep Email";
-        } else if (val === '3') {
-            document.getElementById('sec_app_type').style.display = 'block';
-            document.getElementById('sec_client_address').style.display = 'block';
-            document.getElementById('sec_inviter').style.display = 'block';
-            document.getElementById('sec_financials').style.display = 'block';
-            lblFname.textContent = "Principal Applicant First Name"; lblLname.textContent = "Principal Applicant Last Name";
-            inputAppType.value = text;
-            lblClientAddress.textContent = "Address (PA)";
-        } else if (val === '4') {
+        } else if (val === '3' || val === '4') {
             document.getElementById('sec_app_type').style.display = 'block';
             document.getElementById('sec_client_address').style.display = 'block';
             document.getElementById('sec_financials').style.display = 'block';
-            lblFname.textContent = "Principal Applicant First Name"; lblLname.textContent = "Principal Applicant Last Name";
-            inputAppType.value = text;
-            lblClientAddress.textContent = "Client Address";
+            if(val === '3') document.getElementById('sec_inviter').style.display = 'block';
+            document.getElementById('application_type').value = text;
         }
     });
 
-    // ----------------------------------------------------
-    // PROFESSIONAL TAXES CALC
-    // ----------------------------------------------------
+    // Tax Logic
     const summaryFeesInput = document.getElementById('payment_terms_summary_fees');
     const includeProTaxes = document.getElementById('include_pro_taxes');
     const professionalTaxesInput = document.getElementById('professional_taxes');
@@ -754,159 +687,97 @@
     function recalcProfessionalTaxes() {
       const fees = parseFloat(summaryFeesInput.value) || 0;
       if (includeProTaxes && includeProTaxes.checked) {
-        const tax = Math.round((fees * 0.13) * 100) / 100; // 2 decimals
+        const tax = Math.round((fees * 0.13) * 100) / 100;
         professionalTaxesInput.value = tax.toFixed(2);
-        totalAmountInput.value = (Math.round((fees + tax) * 100) / 100).toFixed(2);
+        totalAmountInput.value = (fees + tax).toFixed(2);
       } else {
-        professionalTaxesInput.value = (0).toFixed(2);
-        totalAmountInput.value = (Math.round(fees * 100) / 100).toFixed(2);
+        professionalTaxesInput.value = "0.00";
+        totalAmountInput.value = fees.toFixed(2);
       }
     }
-
     if (summaryFeesInput) summaryFeesInput.addEventListener('input', recalcProfessionalTaxes);
     if (includeProTaxes) includeProTaxes.addEventListener('change', recalcProfessionalTaxes);
 
-    // PAYMENT PHASE (Milestones) LOGIC
-    // ----------------------------------------------------
+    // Milestones
     if (selectPaymentPhase) {
       selectPaymentPhase.addEventListener('change', () => {
         const raw = selectPaymentPhase.value;
         const count = parseInt(raw, 10) || 0;
-        const sec = document.getElementById('sec_payment_phase');
         const container = document.getElementById('payment_phase_rows_container');
         container.innerHTML = '';
-
         if (count > 0) {
-          sec.style.display = 'block';
+          document.getElementById('sec_payment_phase').style.display = 'block';
           for (let i = 1; i <= count; i++) {
             const row = document.createElement('div');
-            row.className = 'payment-phase-row';
-            row.style.marginBottom = '0.8rem';
-            row.innerHTML = `
-              <div class="form-group">
-                <label>Description</label>
-                <input type="text" name="retainer_desc_${i}" value="Milestone ${i}" />
-              </div>
-              <div class="input-row">
-                <div class="form-group">
-                  <label>Amount</label>
-                  <input type="text" name="retainer_lineitem_without_tax_${i}" placeholder="e.g. 500.00 (optional)" />
-                </div>
-                <div class="form-group">
-                  <label>Due</label>
-                  <input type="text" name="retainer_dueon_${i}" placeholder="e.g. 2025-12-31 or text (optional)" />
-                </div>
-              </div>
-            `;
+            row.innerHTML = `<div class="form-group"><label>Milestone ${i} Desc</label><input type="text" name="retainer_desc_${i}" value="Milestone ${i}" /></div><div class="input-row"><div class="form-group"><label>Amount</label><input type="text" name="retainer_lineitem_without_tax_${i}" /></div><div class="form-group"><label>Due</label><input type="text" name="retainer_dueon_${i}" /></div></div>`;
             container.appendChild(row);
           }
-        } else {
-          sec.style.display = 'none';
-          container.innerHTML = '';
-        }
+        } else { document.getElementById('sec_payment_phase').style.display = 'none'; }
       });
     }
 
-    // ----------------------------------------------------
-    // STEP NAVIGATION LOGIC
-    // ----------------------------------------------------
-    document.getElementById('goToStep3Btn').onclick = () => {
-        if(esignForm.reportValidity()) {
-            updateStep(3);
-        }
-    };
-    document.getElementById('backToSearchBtn').onclick = () => updateStep(1);
-    document.getElementById('backToStep2Btn').onclick = () => updateStep(2);
-    document.getElementById('backBtn').onclick = () => updateStep(3);
-
-    // ----------------------------------------------------
-    // STEP 1: FIND CLIENT
-    // ----------------------------------------------------
+    // Search Client Logic
     async function performSearch(val, type, btn) {
         if(!val) return showNotification("Please enter a value", "error");
-        
-        const originalText = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner"></span>Searching...';
-
         try {
             const res = await fetch(FIND_CLIENT_WEBHOOK_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(type === 'phone' ? { phone_number: val } : { client_id: val })
             });
-
             const data = await res.json();
-            
             if (data.status === "success" && data.client) {
                 const c = data.client;
-                const parts = (c.client_name || c.customerName || "").split(" ");
+                const parts = (c.client_name || "").split(" ");
                 document.getElementById('fname_primary').value = parts[0] || "";
                 document.getElementById('lname_primary').value = parts.slice(1).join(" ") || "";
                 document.getElementById('client_email').value = c.client_email || "";
                 document.getElementById('client_phone').value = c.client_phone || (type==='phone'?val:"");
                 if(c.address) document.getElementById('client_address').value = c.address;
                 showNotification("✅ Client Found!", "success");
-            } else {
-                ['fname_primary', 'lname_primary', 'client_email'].forEach(id => document.getElementById(id).value = '');
-                showNotification("Client not found. Manual entry required.", "error");
-            }
+            } else { showNotification("Client not found.", "error"); }
             updateStep(2);
-        } catch (e) {
-            console.error(e);
-            showNotification("Search error. Enter manually.", "error");
-            updateStep(2);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }
+        } catch (e) { updateStep(2); } finally { btn.disabled = false; btn.innerHTML = "Find Client"; }
     }
 
     document.getElementById('findClientPhoneBtn').onclick = () => performSearch(document.getElementById('search_phone').value.trim(), 'phone', document.getElementById('findClientPhoneBtn'));
     document.getElementById('findClientIdBtn').onclick = () => performSearch(document.getElementById('search_client_id').value.trim(), 'client_id', document.getElementById('findClientIdBtn'));
     document.getElementById('proceedManualBtn').onclick = (e) => { e.preventDefault(); updateStep(2); };
 
-    // ----------------------------------------------------
-    // FINAL SUBMISSION (GENERATE)
-    // ----------------------------------------------------
+    // Navigation
+    document.getElementById('goToStep3Btn').onclick = () => { if(esignForm.reportValidity()) updateStep(3); };
+    document.getElementById('backToSearchBtn').onclick = () => updateStep(1);
+    document.getElementById('backToStep2Btn').onclick = () => updateStep(2);
+    document.getElementById('backBtn').onclick = () => updateStep(3);
+
+    // Final Generation
     esignForm.onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        const btnTxt = document.getElementById('btnText');
-        
         btn.disabled = true;
-        btnTxt.innerHTML = '<span class="spinner"></span>Generating...';
+        document.getElementById('btnText').innerHTML = '<span class="spinner"></span>Generating...';
 
         const formData = new FormData(esignForm);
         const jsonData = {};
-
-        // 1. Build JSON Data (Handle Arrays)
         formData.forEach((value, key) => {
             if(key.endsWith('[]')) {
                 const cleanKey = key.slice(0, -2);
-                if(!jsonData[cleanKey]) {
-                    jsonData[cleanKey] = [];
-                }
+                if(!jsonData[cleanKey]) jsonData[cleanKey] = [];
                 jsonData[cleanKey].push(value);
-            } else {
-                jsonData[key] = value;
-            }
+            } else { jsonData[key] = value; }
         });
 
-        // ------------------------------------------------------
-        // FIX: RETAINER TYPE OVERRIDE (Send Name instead of ID)
-        // ------------------------------------------------------
+        // Add Toggle Status
+        jsonData['urgent_status'] = document.getElementById('urgent_toggle').checked ? "Urgent" : "Non-Urgent";
+
+        // Fix retainer name
         const sel = document.getElementById('select_retainer');
         if (sel.selectedIndex > 0) {
             let text = sel.options[sel.selectedIndex].text;
-            // Remove "1 : " prefix to send clean text
-            if(text.indexOf(" : ") > -1) {
-                text = text.split(" : ")[1];
-            }
-            jsonData['retainer_type'] = text;
+            jsonData['retainer_type'] = text.includes(" : ") ? text.split(" : ")[1] : text;
         }
-
-        console.log("Sending Payload:", jsonData);
 
         try {
             const res = await fetch(ESIGN_WEBHOOK_URL, {
@@ -915,60 +786,27 @@
                 body: JSON.stringify(jsonData)
             });
             const result = await res.json();
-
             if (res.ok) {
                 finalizationData = result;
-                if(result.documentId) {
-                    document.getElementById('editDocLink').href = `https://docs.google.com/document/d/${result.documentId}/edit`;
-                }
+                if(result.documentId) document.getElementById('editDocLink').href = `https://docs.google.com/document/d/${result.documentId}/edit`;
                 updateStep(4);
-                showNotification("✅ Document Generated!", "success");
-            } else {
-                showNotification("Generation Failed", "error");
-            }
-        } catch (err) {
-            showNotification("Connection Error", "error");
-        } finally {
-            btn.disabled = false;
-            btnTxt.textContent = "Generate & Send Link";
-        }
+                showNotification("✅ Generated!", "success");
+            } else { showNotification("Failed", "error"); }
+        } catch (err) { showNotification("Error", "error"); } finally { btn.disabled = false; document.getElementById('btnText').textContent = "Generate & Send Link"; }
     };
 
-    // ----------------------------------------------------
-    // SEND EMAIL ACTION
-    // ----------------------------------------------------
     document.getElementById('sendMailBtn').onclick = async () => {
         const btn = document.getElementById('sendMailBtn');
-        const btnTxt = document.getElementById('sendBtnText');
-        const originalTxt = btnTxt.textContent;
-        
-        btn.disabled = true;
-        btnTxt.innerHTML = '<span class="spinner"></span>Sending...';
-
+        document.getElementById('sendBtnText').innerHTML = '<span class="spinner"></span>Sending...';
         try {
-            const res = await fetch(ESIGN_WEBHOOK_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(finalizationData)
-            });
-
+            const res = await fetch(ESIGN_WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(finalizationData) });
             if (res.ok) {
-                document.getElementById('step4_container').innerHTML = `<h3>✅ Email Sent!</h3><p>You may close this window.</p>`;
-                showNotification("✅ Sent successfully!", "success");
-            } else {
-                showNotification("Failed to send", "error");
-                btn.disabled = false;
-                btnTxt.textContent = originalTxt;
-            }
-        } catch (e) {
-            showNotification("Error sending email", "error");
-            btn.disabled = false;
-            btnTxt.textContent = originalTxt;
-        }
+                document.getElementById('step4_container').innerHTML = `<h3>✅ Email Sent!</h3>`;
+            } else { showNotification("Failed to send", "error"); }
+        } catch (e) { showNotification("Error", "error"); }
     };
 
     updateStep(1);
   </script>
 </body>
 </html>
-
